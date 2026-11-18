@@ -1,0 +1,14 @@
+{
+  "enabled": true,
+  "name": "Frontend lint and type check",
+  "description": "When the agent finishes a turn, run ESLint and the TypeScript compiler over the frontend.",
+  "version": "1",
+  "when": {
+    "type": "agentStop"
+  },
+  "then": {
+    "type": "runCommand",
+    "command": "if [ -f package.json ]; then npm run --silent lint && npm run --silent typecheck; else echo 'Frontend not scaffolded yet (Phase 2 task 11)'; fi",
+    "timeout": 300
+  }
+}
