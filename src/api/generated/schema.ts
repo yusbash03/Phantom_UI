@@ -4,6 +4,109 @@
  */
 
 export interface paths {
+    "/api/v1/incidents/{incidentId}/analyses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All attempts, newest first. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AnalysisResponse"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{incidentId}/analyses/retry": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Queues a new attempt when the latest one failed (Requirement 6.5). */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Accepted */
+                202: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AnalysisResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/attachments/{id}/content": {
         parameters: {
             query?: never;
@@ -1395,6 +1498,35 @@ export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         /** @enum {unknown} */
+        AnalysisFailureCode: "Timeout" | "ProviderError" | "InvalidOutput" | "RateLimited" | "NotConfigured";
+        /** @description One AI analysis attempt as shown to staff. `Result` is a recommendation, never an approved value. */
+        AnalysisResponse: {
+            /** Format: uuid */
+            id: string;
+            /** Format: int32 */
+            attempt: number;
+            reportReference: string;
+            status: components["schemas"]["AnalysisStatus"];
+            provider: null | string;
+            model: null | string;
+            isSimulated: boolean;
+            schemaVersion: string;
+            /** Format: date-time */
+            requestedAt: string;
+            /** Format: date-time */
+            completedAt: null | string;
+            /** Format: int32 */
+            latencyMs: null | number;
+            recommendedSeverity: null | components["schemas"]["Severity"];
+            recommendedCategory: null | components["schemas"]["IncidentCategory"];
+            result: null | components["schemas"]["IntelligenceResultV1"];
+            failureCode: null | components["schemas"]["AnalysisFailureCode"];
+            failureMessage: null | string;
+            requestedBy: null | components["schemas"]["UserRef"];
+        };
+        /** @enum {unknown} */
+        AnalysisStatus: "Pending" | "Processing" | "Succeeded" | "Failed";
+        /** @enum {unknown} */
         AttachmentKind: "Image" | "Audio";
         AttachmentResponse: {
             /** Format: uuid */
@@ -1409,7 +1541,7 @@ export interface components {
         };
         ChangeSeverityRequest: {
             severity: null | components["schemas"]["Severity"];
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
         CreateUserRequest: {
@@ -1429,12 +1561,18 @@ export interface components {
             title: string;
             description: string;
             category: null | components["schemas"]["IncidentCategory"];
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
         EntityTagHeaderValue: {
             tag?: components["schemas"]["StringSegment"];
             isWeak?: boolean;
+        };
+        /** @enum {unknown} */
+        EntityType: "Person" | "Vehicle" | "Organisation" | "Landmark" | "Hazard" | "Other";
+        ExtractedEntity: {
+            type: components["schemas"]["EntityType"];
+            value: string;
         };
         FileStreamResult: {
             fileStream?: components["schemas"]["Stream"];
@@ -1484,7 +1622,7 @@ export interface components {
             createdAt: string;
             /** Format: date-time */
             updatedAt: string;
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
             availableActions: components["schemas"]["IncidentAction"][];
             reports: components["schemas"]["IncidentReportResponse"][];
@@ -1535,6 +1673,26 @@ export interface components {
         IncidentSortField: "CreatedAt" | "UpdatedAt" | "Severity" | "Status";
         /** @enum {unknown} */
         IncidentStatus: "Reported" | "UnderReview" | "Verified" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected";
+        /**
+         * @description How strongly the report indicates something. Deliberately has no "confirmed" value: only people confirm.
+         * @enum {unknown}
+         */
+        Indication: "Unknown" | "NotIndicated" | "Possible" | "Reported";
+        /** @description Schema `phantom.intel.v1` (Requirement 6.2). A recommendation for a coordinator, never a decision. */
+        IntelligenceResultV1: {
+            category: components["schemas"]["IncidentCategory"];
+            summary: string;
+            severity: components["schemas"]["Severity"];
+            severityRationale: string;
+            namedLocations: string[];
+            potentialCasualties: components["schemas"]["Indication"];
+            possibleTrappedPersons: components["schemas"]["Indication"];
+            hazards: string[];
+            missingInformation: string[];
+            recommendedNextActions: string[];
+            extractedEntities: components["schemas"]["ExtractedEntity"][];
+            confidenceExplanation: string;
+        };
         /** @enum {unknown} */
         LocationPrecision: "Unknown" | "Region" | "Locality" | "Street" | "Exact";
         /** @enum {unknown} */
@@ -1600,12 +1758,12 @@ export interface components {
         };
         ReasonRequest: {
             reason: string;
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
         ResolveIncidentRequest: {
             resolutionSummary: string;
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
         /** @enum {unknown} */
@@ -1664,12 +1822,12 @@ export interface components {
         /** @description An omitted severity is a validation error, never a silent default. */
         VerifyIncidentRequest: {
             approvedSeverity: null | components["schemas"]["Severity"];
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
         /** @description Every write carries the `Version` the client last read; a stale version is a conflict. */
         VersionedRequest: {
-            /** Format: uint32 */
+            /** Format: int32 */
             version: number;
         };
     };
