@@ -22,3 +22,14 @@ export const ROLE_LABELS: Record<RoleName, string> = {
 export function isRoleName(value: string): value is RoleName {
   return (ROLES as readonly string[]).includes(value)
 }
+
+export type Severity = Schemas['Severity']
+export type IncidentStatus = Schemas['IncidentStatus']
+export type IncidentAction = Schemas['IncidentAction']
+export type IncidentListItem = Schemas['IncidentListItem']
+export type IncidentDetail = Schemas['IncidentDetailResponse']
+export type IncidentReport = Schemas['IncidentReportResponse']
+export type IncidentAttachment = Schemas['AttachmentResponse']
+export type IncidentLocation = Schemas['LocationResponse']
+export type IncidentSortField = Schemas['IncidentSortField']
+export type SortDirection = Schemas['SortDirection']

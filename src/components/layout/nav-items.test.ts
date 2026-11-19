@@ -15,3 +15,11 @@ describe('visibleSections', () => {
     expect(visibleSections(as('Responder')).map((s) => s.title)).not.toContain('Administration')
   })
 })
+
+describe('incident navigation', () => {
+  it('shows incidents to operational staff only', () => {
+    expect(labels(['IncidentCoordinator'])).toContain('Incidents')
+    expect(labels(['Administrator'])).toContain('Incidents')
+    expect(labels(['Responder'])).not.toContain('Incidents')
+  })
+})

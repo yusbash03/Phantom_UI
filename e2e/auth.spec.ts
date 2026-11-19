@@ -17,7 +17,9 @@ async function openNavigation(page: Page) {
 
 test('administrator signs in, manages users, and the session survives a reload', async ({ page }) => {
   await signIn(page, 'admin@phantom.demo')
-  await expect(page).toHaveURL(/\/admin\/users$/)
+  await expect(page).toHaveURL(/\/incidents$/)
+  await openNavigation(page)
+  await page.getByRole('link', { name: 'Users & roles' }).click()
   await expect(page.getByRole('heading', { name: 'Users & roles' })).toBeVisible()
   await expect(page.getByText('coordinator@phantom.demo')).toBeVisible()
   await expect(page.getByText('Demo data').first()).toBeVisible()
@@ -33,13 +35,14 @@ test('administrator signs in, manages users, and the session survives a reload',
   await expect(page).toHaveURL(/\/login$/)
 })
 
-for (const { email, role } of [
-  { email: 'coordinator@phantom.demo', role: 'Incident Coordinator' },
-  { email: 'responder@phantom.demo', role: 'Responder' },
+for (const { email, role, home } of [
+  { email: 'coordinator@phantom.demo', role: 'Incident Coordinator', home: /\/incidents$/ },
+  { email: 'responder@phantom.demo', role: 'Responder', home: /\/account$/ },
 ]) {
   test(`${role} signs in and cannot reach user administration`, async ({ page }) => {
     await signIn(page, email)
-    await expect(page).toHaveURL(/\/account$/)
+    await expect(page).toHaveURL(home)
+    await page.goto('/account')
     await expect(page.getByText(role, { exact: true }).last()).toBeVisible()
 
     await openNavigation(page)

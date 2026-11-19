@@ -10,6 +10,9 @@ export default defineConfig({
   fullyParallel: false,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
+  // The development database is remote (Neon) and may be waking from auto-suspend.
+  timeout: 60_000,
+  expect: { timeout: 15_000 },
   use: {
     baseURL: 'http://localhost:5173',
     trace: 'retain-on-failure',

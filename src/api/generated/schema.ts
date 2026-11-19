@@ -4,6 +4,52 @@
  */
 
 export interface paths {
+    "/api/v1/attachments/{id}/content": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/octet-stream": components["schemas"]["FileStreamResult"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/problem+json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -173,6 +219,726 @@ export interface paths {
             };
         };
         put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Status?: components["schemas"]["IncidentStatus"][];
+                    Category?: components["schemas"]["IncidentCategory"];
+                    Severity?: components["schemas"]["Severity"];
+                    From?: string;
+                    To?: string;
+                    Search?: string;
+                    Sort?: components["schemas"]["IncidentSortField"];
+                    Direction?: components["schemas"]["SortDirection"];
+                    Page?: number;
+                    PageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfIncidentListItem"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Edits the working title, description and category. The original public reports are never changed. */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["EditIncidentRequest"];
+                    "text/json": components["schemas"]["EditIncidentRequest"];
+                    "application/*+json": components["schemas"]["EditIncidentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/review": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VersionedRequest"];
+                    "text/json": components["schemas"]["VersionedRequest"];
+                    "application/*+json": components["schemas"]["VersionedRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verifies the incident. An approved severity is required and is recorded as the coordinator's decision. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyIncidentRequest"];
+                    "text/json": components["schemas"]["VerifyIncidentRequest"];
+                    "application/*+json": components["schemas"]["VerifyIncidentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReasonRequest"];
+                    "text/json": components["schemas"]["ReasonRequest"];
+                    "application/*+json": components["schemas"]["ReasonRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/resolve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ResolveIncidentRequest"];
+                    "text/json": components["schemas"]["ResolveIncidentRequest"];
+                    "application/*+json": components["schemas"]["ResolveIncidentRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/reopen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ReasonRequest"];
+                    "text/json": components["schemas"]["ReasonRequest"];
+                    "application/*+json": components["schemas"]["ReasonRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/close": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VersionedRequest"];
+                    "text/json": components["schemas"]["VersionedRequest"];
+                    "application/*+json": components["schemas"]["VersionedRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{id}/severity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Changes the approved severity of a verified incident. AI recommendations never use this path. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["ChangeSeverityRequest"];
+                    "text/json": components["schemas"]["ChangeSeverityRequest"];
+                    "application/*+json": components["schemas"]["ChangeSeverityRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         post?: never;
         delete?: never;
         options?: never;
@@ -628,6 +1394,24 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** @enum {unknown} */
+        AttachmentKind: "Image" | "Audio";
+        AttachmentResponse: {
+            /** Format: uuid */
+            id: string;
+            kind: components["schemas"]["AttachmentKind"];
+            contentType: string;
+            /** Format: int64 */
+            sizeBytes: number;
+            originalFileName: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        ChangeSeverityRequest: {
+            severity: null | components["schemas"]["Severity"];
+            /** Format: uint32 */
+            version: number;
+        };
         CreateUserRequest: {
             email: string;
             displayName: string;
@@ -641,11 +1425,133 @@ export interface components {
             displayName: string;
             roles: string[];
         };
+        EditIncidentRequest: {
+            title: string;
+            description: string;
+            category: null | components["schemas"]["IncidentCategory"];
+            /** Format: uint32 */
+            version: number;
+        };
+        EntityTagHeaderValue: {
+            tag?: components["schemas"]["StringSegment"];
+            isWeak?: boolean;
+        };
+        FileStreamResult: {
+            fileStream?: components["schemas"]["Stream"];
+            contentType?: null | string;
+            fileDownloadName?: null | string;
+            /** Format: date-time */
+            lastModified?: null | string;
+            entityTag?: null | components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
+        };
         /** Format: binary */
         IFormFile: string;
         IFormFileCollection: components["schemas"]["IFormFile"][];
+        /**
+         * @description Coordinator operations that may be offered on an incident, given its status and the caller's role.
+         * @enum {unknown}
+         */
+        IncidentAction: "Edit" | "BeginReview" | "Verify" | "Reject" | "Resolve" | "Reopen" | "Close" | "ChangeSeverity";
         /** @enum {unknown} */
         IncidentCategory: "Fire" | "MedicalEmergency" | "RoadAccident" | "Security" | "Flood" | "Infrastructure" | "Other";
+        IncidentDetailResponse: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            title: string;
+            description: string;
+            category: components["schemas"]["IncidentCategory"];
+            aiRecommendedCategory: null | components["schemas"]["IncidentCategory"];
+            status: components["schemas"]["IncidentStatus"];
+            approvedSeverity: null | components["schemas"]["Severity"];
+            aiRecommendedSeverity: null | components["schemas"]["Severity"];
+            location: components["schemas"]["LocationResponse"];
+            locationNeedsVerification: boolean;
+            assignedCoordinator: null | components["schemas"]["UserRef"];
+            verifiedBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            verifiedAt: null | string;
+            resolutionSummary: null | string;
+            resolvedBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            resolvedAt: null | string;
+            closureReason: null | string;
+            /** Format: date-time */
+            closedAt: null | string;
+            isDemoData: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+            /** Format: uint32 */
+            version: number;
+            availableActions: components["schemas"]["IncidentAction"][];
+            reports: components["schemas"]["IncidentReportResponse"][];
+        };
+        IncidentListItem: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            title: string;
+            category: components["schemas"]["IncidentCategory"];
+            status: components["schemas"]["IncidentStatus"];
+            approvedSeverity: null | components["schemas"]["Severity"];
+            aiRecommendedSeverity: null | components["schemas"]["Severity"];
+            locationText: string;
+            hasCoordinates: boolean;
+            locationIsVerified: boolean;
+            locationNeedsVerification: boolean;
+            /** Format: int32 */
+            reportCount: number;
+            isDemoData: boolean;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        /** @description An original public submission. Immutable; contact details are visible to staff only. */
+        IncidentReportResponse: {
+            /** Format: uuid */
+            id: string;
+            reference: string;
+            isOriginal: boolean;
+            title: string;
+            description: string;
+            category: components["schemas"]["IncidentCategory"];
+            locationText: string;
+            /** Format: double */
+            reportedLatitude: null | number;
+            /** Format: double */
+            reportedLongitude: null | number;
+            reporterName: null | string;
+            reporterPhone: null | string;
+            reporterEmail: null | string;
+            /** Format: date-time */
+            submittedAt: string;
+            attachments: components["schemas"]["AttachmentResponse"][];
+        };
+        /** @enum {unknown} */
+        IncidentSortField: "CreatedAt" | "UpdatedAt" | "Severity" | "Status";
+        /** @enum {unknown} */
+        IncidentStatus: "Reported" | "UnderReview" | "Verified" | "Assigned" | "InProgress" | "Resolved" | "Closed" | "Rejected";
+        /** @enum {unknown} */
+        LocationPrecision: "Unknown" | "Region" | "Locality" | "Street" | "Exact";
+        /** @enum {unknown} */
+        LocationProvenance: "Reported" | "AiInferred" | "Geocoded" | "ManuallyVerified";
+        LocationResponse: {
+            text: string;
+            /** Format: double */
+            latitude: null | number;
+            /** Format: double */
+            longitude: null | number;
+            provenance: components["schemas"]["LocationProvenance"];
+            precision: components["schemas"]["LocationPrecision"];
+            isVerified: boolean;
+            verifiedBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            verifiedAt: null | string;
+        };
         LoginRequest: {
             email: string;
             password: string;
@@ -655,6 +1561,15 @@ export interface components {
             /** Format: date-time */
             accessTokenExpiresAt: string;
             user: components["schemas"]["CurrentUserResponse"];
+        };
+        PagedResultOfIncidentListItem: {
+            items: components["schemas"]["IncidentListItem"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
         };
         PagedResultOfUserResponse: {
             items: components["schemas"]["UserResponse"][];
@@ -683,6 +1598,31 @@ export interface components {
             reference: string;
             status: components["schemas"]["PublicReportStatus"];
         };
+        ReasonRequest: {
+            reason: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        ResolveIncidentRequest: {
+            resolutionSummary: string;
+            /** Format: uint32 */
+            version: number;
+        };
+        /** @enum {unknown} */
+        Severity: "Low" | "Medium" | "High" | "Critical";
+        /** @enum {unknown} */
+        SortDirection: "Desc" | "Asc";
+        /** Format: binary */
+        Stream: string;
+        StringSegment: {
+            buffer?: null | string;
+            /** Format: int32 */
+            offset?: number;
+            /** Format: int32 */
+            length?: number;
+            value?: null | string;
+            hasValue?: boolean;
+        };
         /** @description Returned to the public caller on successful submission. */
         SubmitReportResponse: {
             reference: string;
@@ -691,6 +1631,11 @@ export interface components {
         };
         UpdateUserRolesRequest: {
             roles: string[];
+        };
+        UserRef: {
+            /** Format: uuid */
+            id: string;
+            displayName: string;
         };
         UserResponse: {
             /** Format: uuid */
@@ -715,6 +1660,17 @@ export interface components {
             errors?: {
                 [key: string]: string[];
             };
+        };
+        /** @description An omitted severity is a validation error, never a silent default. */
+        VerifyIncidentRequest: {
+            approvedSeverity: null | components["schemas"]["Severity"];
+            /** Format: uint32 */
+            version: number;
+        };
+        /** @description Every write carries the `Version` the client last read; a stale version is a conflict. */
+        VersionedRequest: {
+            /** Format: uint32 */
+            version: number;
         };
     };
     responses: never;

@@ -1,4 +1,4 @@
-import { UserCircle, Users, type LucideIcon } from 'lucide-react'
+import { Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
 import type { RoleName } from '@/api/types'
 
 export interface NavItem {
@@ -16,6 +16,10 @@ export interface NavSection {
 
 // Only screens that exist are listed. New screens are added here as each feature is delivered.
 export const NAV_SECTIONS: NavSection[] = [
+  {
+    title: 'Operations',
+    items: [{ to: '/incidents', label: 'Incidents', icon: Siren, roles: ['Administrator', 'IncidentCoordinator'] }],
+  },
   {
     title: 'Administration',
     items: [{ to: '/admin/users', label: 'Users & roles', icon: Users, roles: ['Administrator'] }],

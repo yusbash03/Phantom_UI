@@ -3,6 +3,8 @@ import { HomeRedirect } from '@/app/HomeRedirect'
 import { RequireAuth } from '@/app/auth/RequireAuth'
 import { AppShell } from '@/components/layout/AppShell'
 import { AccountPage } from '@/features/account/AccountPage'
+import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
+import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { PublicReportPage } from '@/features/public-reporting/PublicReportPage'
@@ -23,6 +25,22 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomeRedirect /> },
       { path: 'account', element: <AccountPage /> },
+      {
+        path: 'incidents',
+        element: (
+          <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
+            <IncidentListPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'incidents/:id',
+        element: (
+          <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
+            <IncidentDetailPage />
+          </RequireAuth>
+        ),
+      },
       {
         path: 'admin/users',
         element: (

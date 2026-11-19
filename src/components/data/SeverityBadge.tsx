@@ -1,8 +1,8 @@
 import { AlertOctagon, AlertTriangle, CircleAlert, Info, type LucideIcon } from 'lucide-react'
+import type { Severity } from '@/api/types'
 import { cn } from '@/lib/utils'
 
-// Mirrors PHANTOM.Domain.Incidents.Severity. Replace with the generated contract type once incident endpoints exist.
-export type Severity = 'Low' | 'Medium' | 'High' | 'Critical'
+export type { Severity }
 
 const STYLES: Record<Severity, { icon: LucideIcon; className: string }> = {
   Critical: { icon: AlertOctagon, className: 'border-severity-critical/40 bg-severity-critical/15 text-severity-critical' },
