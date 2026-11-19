@@ -4,7 +4,7 @@ import { ConfirmDialog } from './ConfirmDialog'
 
 describe('ConfirmDialog', () => {
   it('keeps the dialog open and shows the error when the action fails', async () => {
-    const onOpenChange = vi.fn()
+    const onOpenChange = vi.fn<(open: boolean) => void>()
     render(
       <ConfirmDialog
         open
@@ -24,7 +24,7 @@ describe('ConfirmDialog', () => {
   })
 
   it('closes after the action succeeds', async () => {
-    const onOpenChange = vi.fn()
+    const onOpenChange = vi.fn<(open: boolean) => void>()
     render(
       <ConfirmDialog open onOpenChange={onOpenChange} title="Proceed?" description="x" confirmLabel="Confirm" onConfirm={() => Promise.resolve()} />,
     )

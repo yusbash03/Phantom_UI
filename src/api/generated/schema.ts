@@ -180,6 +180,149 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/public/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Submits a public incident report and returns its reference.
+         * @description Send an `Idempotency-Key` (UUID) header; repeating it within 24 hours returns the original
+         *     reference instead of creating a second report.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: {
+                    "Idempotency-Key"?: string;
+                };
+                path?: never;
+                cookie?: never;
+            };
+            /** @description Up to 5 images (JPEG, PNG, WebP) and 1 audio recording (WebM, OGG, MP3, WAV, M4A), 10 MB each. */
+            requestBody: {
+                content: {
+                    "multipart/form-data": {
+                        Title?: string;
+                        Description?: string;
+                        Category?: components["schemas"]["IncidentCategory"];
+                        LocationText?: string;
+                        /** Format: double */
+                        Latitude?: number;
+                        /** Format: double */
+                        Longitude?: number;
+                        ReporterName?: string;
+                        ReporterPhone?: string;
+                        ReporterEmail?: string;
+                        Files?: components["schemas"]["IFormFileCollection"];
+                    };
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SubmitReportResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/public/reports/{reference}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Returns the coarse public status of a submitted report. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    reference: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PublicStatusResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users": {
         parameters: {
             query?: never;
@@ -498,6 +641,11 @@ export interface components {
             displayName: string;
             roles: string[];
         };
+        /** Format: binary */
+        IFormFile: string;
+        IFormFileCollection: components["schemas"]["IFormFile"][];
+        /** @enum {unknown} */
+        IncidentCategory: "Fire" | "MedicalEmergency" | "RoadAccident" | "Security" | "Flood" | "Infrastructure" | "Other";
         LoginRequest: {
             email: string;
             password: string;
@@ -524,6 +672,22 @@ export interface components {
             status?: null | number;
             detail?: null | string;
             instance?: null | string;
+        };
+        /**
+         * @description The only states a public reporter can see (Requirement 4.10).
+         * @enum {unknown}
+         */
+        PublicReportStatus: "Received" | "UnderReview" | "BeingHandled" | "Closed";
+        /** @description Coarse status returned to anonymous callers — no internal data. */
+        PublicStatusResponse: {
+            reference: string;
+            status: components["schemas"]["PublicReportStatus"];
+        };
+        /** @description Returned to the public caller on successful submission. */
+        SubmitReportResponse: {
+            reference: string;
+            /** Format: date-time */
+            submittedAt: string;
         };
         UpdateUserRolesRequest: {
             roles: string[];

@@ -42,7 +42,7 @@ describe('authFetch', () => {
 
   it('ends the session when the refresh token is rejected', async () => {
     refreshSucceeds = false
-    const expired = vi.fn()
+    const expired = vi.fn<() => void>()
     const unsubscribe = onSessionExpired(expired)
 
     const result = await api.GET('/api/v1/users')
