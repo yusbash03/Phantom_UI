@@ -1,4 +1,4 @@
-import { ClipboardList, HardHat, Map, Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
+import { Bell, ClipboardList, HardHat, Map, Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
 import type { RoleName } from '@/api/types'
 
 export interface NavItem {
@@ -31,7 +31,10 @@ export const NAV_SECTIONS: NavSection[] = [
   },
   {
     title: 'You',
-    items: [{ to: '/account', label: 'Account', icon: UserCircle }],
+    items: [
+      { to: '/notifications', label: 'Notifications', icon: Bell },
+      { to: '/account', label: 'Account', icon: UserCircle },
+    ],
   },
 ]
 

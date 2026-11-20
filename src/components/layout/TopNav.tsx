@@ -14,6 +14,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { NotificationBell } from '@/features/notifications/NotificationBell'
 import { PhantomMark } from './PhantomMark'
 import { SidebarNav } from './Sidebar'
 
@@ -64,6 +65,7 @@ export function TopNav() {
       </div>
 
       <div className="ml-auto flex items-center gap-2">
+        <NotificationBell />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="h-10 gap-3 px-2" aria-label="Account menu">

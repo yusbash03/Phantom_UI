@@ -816,6 +816,142 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidents/{incidentId}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The incident's full history: reports, AI analyses, decisions, assignments and updates (15.4, 15.5). */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["TimelineEvent"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search by actor, entity, action and date range (15.6). */
+        get: {
+            parameters: {
+                query?: {
+                    ActorUserId?: string;
+                    EntityType?: string;
+                    EntityId?: string;
+                    Action?: string;
+                    From?: string;
+                    To?: string;
+                    Page?: number;
+                    PageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PagedResultOfAuditEntryResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/audit/facets": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["AuditFacets"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -1840,6 +1976,126 @@ export interface paths {
             };
         };
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    UnreadOnly?: boolean;
+                    Page?: number;
+                    PageSize?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["NotificationListResponse"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/{id}/read": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/notifications/read-all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["MarkAllReadResponse"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -3127,6 +3383,28 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        /** @enum {unknown} */
+        AuditActorType: "User" | "System" | "Anonymous";
+        /** @description An audit record as stored. JSON values are passed through unchanged for inspection. */
+        AuditEntryResponse: {
+            /** Format: int64 */
+            id: number;
+            /** Format: date-time */
+            occurredAt: string;
+            actorType: components["schemas"]["AuditActorType"];
+            actor: null | components["schemas"]["UserRef"];
+            action: string;
+            entityType: string;
+            entityId: null | string;
+            previousValue: null | string;
+            newValue: null | string;
+            metadata: null | string;
+            correlationId: null | string;
+        };
+        AuditFacets: {
+            actions: string[];
+            entityTypes: string[];
+        };
         ChangeSeverityRequest: {
             severity: null | components["schemas"]["Severity"];
             /** Format: int32 */
@@ -3386,6 +3664,50 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        MarkAllReadResponse: {
+            /** Format: int32 */
+            updated: number;
+        };
+        NotificationListResponse: {
+            items: components["schemas"]["NotificationResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+            /** Format: int32 */
+            unreadCount: number;
+        };
+        NotificationResponse: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["NotificationType"];
+            title: string;
+            body: string;
+            /** Format: uuid */
+            incidentId: null | string;
+            /** Format: uuid */
+            assignmentId: null | string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            readAt: null | string;
+        };
+        /**
+         * @description What happened (Requirement 14.1). Values are persisted; never rename.
+         * @enum {unknown}
+         */
+        NotificationType: "AssignmentCreated" | "AssignmentCancelled" | "AssignmentDeclined" | "AssignmentCompleted" | "CriticalAiRecommendation" | "PossibleDuplicate";
+        PagedResultOfAuditEntryResponse: {
+            items: components["schemas"]["AuditEntryResponse"][];
+            /** Format: int32 */
+            page: number;
+            /** Format: int32 */
+            pageSize: number;
+            /** Format: int32 */
+            totalCount: number;
+        };
         PagedResultOfIncidentListItem: {
             items: components["schemas"]["IncidentListItem"][];
             /** Format: int32 */
@@ -3556,6 +3878,24 @@ export interface components {
             /** Format: date-time */
             submittedAt: string;
         };
+        /**
+         * @description One entry in an incident's history (Requirement 15.4). `IsAi` marks AI output so it is never
+         *     mistaken for a human decision; `ActorType` says whether a person, the system or the public acted.
+         */
+        TimelineEvent: {
+            id: string;
+            /** Format: date-time */
+            occurredAt: string;
+            kind: components["schemas"]["TimelineEventKind"];
+            actorType: components["schemas"]["AuditActorType"];
+            actor: null | components["schemas"]["UserRef"];
+            action: string;
+            summary: string;
+            detail: null | string;
+            isAi: boolean;
+        };
+        /** @enum {unknown} */
+        TimelineEventKind: "Report" | "Ai" | "Decision" | "Assignment" | "Update" | "Correlation" | "Location" | "System";
         UpdateResponderRequest: {
             fullName: string;
             team: string;

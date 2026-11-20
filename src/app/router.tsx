@@ -8,6 +8,7 @@ import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { OperationsMapPage } from '@/features/map/OperationsMapPage'
+import { NotificationsPage } from '@/features/notifications/NotificationsPage'
 import { RespondersPage } from '@/features/responders/RespondersPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { PublicReportPage } from '@/features/public-reporting/PublicReportPage'
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
     children: [
       { index: true, element: <HomeRedirect /> },
       { path: 'account', element: <AccountPage /> },
+      { path: 'notifications', element: <NotificationsPage /> },
       {
         path: 'incidents',
         element: (
