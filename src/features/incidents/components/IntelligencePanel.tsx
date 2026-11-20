@@ -248,7 +248,7 @@ function ResultView({
       <p className="flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-border pt-3 text-xs text-muted-foreground">
         {analysis.isSimulated && (
           <Badge variant="outline" className="border-warning/40 text-warning">
-            Simulated — not a real AI result
+            {analysis.provider === 'RecordedFixture' ? 'Recorded test fixture — not an analysis of this report' : 'Simulated — not a real AI result'}
           </Badge>
         )}
         <span>

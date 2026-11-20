@@ -29,6 +29,9 @@ export default defineConfig({
     {
       command: 'dotnet run --project ../../backend/Phantom_API/src/PHANTOM.API --launch-profile http',
       url: 'http://localhost:5080/health/live',
+      // Design §12: the AI provider is replaced by a labelled recorded fixture in tests (no live model calls).
+      // An API you started yourself is reused as-is; start it with Ai__Provider=RecordedFixture to match.
+      env: { ...process.env, Ai__Provider: 'RecordedFixture', Ai__WorkerEnabled: 'true' } as Record<string, string>,
       reuseExistingServer: true,
       timeout: 180_000,
     },

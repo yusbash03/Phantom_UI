@@ -169,6 +169,20 @@ describe('IntelligencePanel', () => {
     expect(await (await panel()).findByText('Simulated — not a real AI result')).toBeInTheDocument()
   })
 
+  it('marks a replayed recording as not an analysis of this report', async () => {
+    server.use(
+      http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(incident)),
+      http.get(`/api/v1/incidents/${ID}/analyses`, () =>
+        HttpResponse.json([analysis({ isSimulated: true, provider: 'RecordedFixture', model: 'gemini-3.8-flash (recorded 2026-11-20)' })]),
+      ),
+    )
+    renderPage()
+
+    const p = await panel()
+    expect(await p.findByText('Recorded test fixture — not an analysis of this report')).toBeInTheDocument()
+    expect(p.queryByText('Simulated — not a real AI result')).not.toBeInTheDocument()
+  })
+
   it('explains a failure and lets staff retry it', async () => {
     let retried = false
     server.use(
