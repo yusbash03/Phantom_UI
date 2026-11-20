@@ -13,7 +13,7 @@ async function signIn(page: Page, email: string) {
 test('an administrator adds, finds and deactivates a responder', async ({ page }) => {
   const callSign = `E2E-${Date.now().toString(36).toUpperCase()}`.slice(0, 20)
   await signIn(page, 'admin@phantom.demo')
-  await expect(page).toHaveURL(/\/incidents$/)
+  await expect(page).toHaveURL(/\/dashboard$/)
   await page.goto('/responders')
   await expect(page.getByText('MED-01')).toBeVisible()
 
@@ -61,7 +61,7 @@ test('the demo responder sets their own availability from their account page', a
 
 test('coordinators see responders read-only', async ({ page }) => {
   await signIn(page, 'coordinator@phantom.demo')
-  await expect(page).toHaveURL(/\/incidents$/)
+  await expect(page).toHaveURL(/\/dashboard$/)
   await page.goto('/responders')
   await expect(page.getByText('MED-01')).toBeVisible()
   await expect(page.getByRole('button', { name: /add responder/i })).toHaveCount(0)

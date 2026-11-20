@@ -22,6 +22,8 @@ test('assignment and decline notifications reach the right people and lead to th
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(reference)
   await coordinator.getByRole('link', { name: reference }).click()
   const header = coordinator.getByRole('main').locator('header')

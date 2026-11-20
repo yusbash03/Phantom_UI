@@ -22,6 +22,8 @@ test('the incident history shows every step, AI marked as AI, and admins can fin
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(reference)
   await coordinator.getByRole('link', { name: reference }).click()
   const header = coordinator.getByRole('main').locator('header')

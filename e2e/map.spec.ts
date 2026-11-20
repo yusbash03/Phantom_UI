@@ -28,7 +28,7 @@ test('the operations map plots a reported incident with an honest, selectable ma
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
-  await expect(coordinator).toHaveURL(/\/incidents$/)
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
   await coordinator.goto('/map')
 
   await expect(coordinator.getByRole('heading', { name: 'Operations map' })).toBeVisible()

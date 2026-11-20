@@ -17,7 +17,7 @@ async function openNavigation(page: Page) {
 
 test('administrator signs in, manages users, and the session survives a reload', async ({ page }) => {
   await signIn(page, 'admin@phantom.demo')
-  await expect(page).toHaveURL(/\/incidents$/)
+  await expect(page).toHaveURL(/\/dashboard$/)
   await openNavigation(page)
   await page.getByRole('link', { name: 'Users & roles' }).click()
   await expect(page.getByRole('heading', { name: 'Users & roles' })).toBeVisible()
@@ -36,7 +36,7 @@ test('administrator signs in, manages users, and the session survives a reload',
 })
 
 for (const { email, role, home } of [
-  { email: 'coordinator@phantom.demo', role: 'Incident Coordinator', home: /\/incidents$/ },
+  { email: 'coordinator@phantom.demo', role: 'Incident Coordinator', home: /\/dashboard$/ },
   { email: 'responder@phantom.demo', role: 'Responder', home: /\/assignments$/ },
 ]) {
   test(`${role} signs in and cannot reach user administration`, async ({ page }) => {

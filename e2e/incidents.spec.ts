@@ -26,7 +26,8 @@ test('a public report reaches the coordinator, who reviews and verifies it', asy
   // Coordinator triages it.
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
-  await expect(coordinator).toHaveURL(/\/incidents$/)
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(reference)
   await coordinator.getByRole('link', { name: reference }).click()
   await expect(coordinator.getByRole('heading', { name: title })).toBeVisible()
@@ -56,7 +57,8 @@ test('a public report reaches the coordinator, who reviews and verifies it', asy
 
 test('administrators can read incidents but not decide them', async ({ page }) => {
   await signIn(page, 'admin@phantom.demo')
-  await expect(page).toHaveURL(/\/incidents$/)
+  await expect(page).toHaveURL(/\/dashboard$/)
+  await page.goto('/incidents')
   await page.getByLabel('Filter by status').click()
   await page.getByRole('option', { name: 'All statuses' }).click()
   const first = page.locator('tbody tr').first()
@@ -80,6 +82,8 @@ test('the AI panel shows an honest, clearly labelled state for a new report', as
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(reference)
   await coordinator.getByRole('link', { name: reference }).click()
 
@@ -123,6 +127,8 @@ test('two reports of the same event are suggested as duplicates and merged by th
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(second)
   const row = coordinator.getByRole('row').filter({ has: coordinator.getByRole('link', { name: second }) })
   await expect(row.getByText('Possible duplicate', { exact: true })).toBeVisible()

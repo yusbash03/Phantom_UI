@@ -24,6 +24,8 @@ test('a coordinator assigns the demo responder, who works the assignment through
 
   const coordinator = await browser.newPage()
   await signIn(coordinator, 'coordinator@phantom.demo')
+  await expect(coordinator).toHaveURL(/\/dashboard$/)
+  await coordinator.goto('/incidents')
   await coordinator.getByLabel('Search incidents').fill(reference)
   await coordinator.getByRole('link', { name: reference }).click()
   const header = coordinator.getByRole('main').locator('header')

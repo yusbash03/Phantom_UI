@@ -3,7 +3,7 @@ import type { TimelineEvent, TimelineEventKind } from '@/api/types'
 import type { TimelineItem } from '@/components/data/Timeline'
 import { Badge } from '@/components/ui/badge'
 
-const ICONS: Record<TimelineEventKind, LucideIcon> = {
+export const TIMELINE_ICONS: Record<TimelineEventKind, LucideIcon> = {
   Report: FileText,
   Ai: Sparkles,
   Decision: Gavel,
@@ -34,7 +34,7 @@ export function toTimelineItem(event: TimelineEvent): TimelineItem {
   ) : null
   return {
     id: event.id,
-    icon: ICONS[event.kind],
+    icon: TIMELINE_ICONS[event.kind],
     title: event.summary,
     meta: `${time.format(new Date(event.occurredAt))} · ${who(event)}`,
     detail: event.detail,
