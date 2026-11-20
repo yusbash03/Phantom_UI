@@ -1049,6 +1049,86 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidents/{id}/location": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Confirms or corrects the location. This is the only way a location becomes verified. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["VerifyLocationRequest"];
+                    "text/json": components["schemas"]["VerifyLocationRequest"];
+                    "application/*+json": components["schemas"]["VerifyLocationRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentDetailResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/public/reports": {
         parameters: {
             query?: never;
@@ -1777,6 +1857,8 @@ export interface components {
             entityTag?: null | components["schemas"]["EntityTagHeaderValue"];
             enableRangeProcessing?: boolean;
         };
+        /** @enum {unknown} */
+        GeocodingStatus: "NotRequired" | "Pending" | "Processing" | "Succeeded" | "NoResult" | "Failed";
         /** Format: binary */
         IFormFile: string;
         IFormFileCollection: components["schemas"]["IFormFile"][];
@@ -1784,7 +1866,7 @@ export interface components {
          * @description Coordinator operations that may be offered on an incident, given its status and the caller's role.
          * @enum {unknown}
          */
-        IncidentAction: "Edit" | "BeginReview" | "Verify" | "Reject" | "Resolve" | "Reopen" | "Close" | "ChangeSeverity";
+        IncidentAction: "Edit" | "BeginReview" | "Verify" | "Reject" | "Resolve" | "Reopen" | "Close" | "ChangeSeverity" | "VerifyLocation";
         /** @enum {unknown} */
         IncidentCategory: "Fire" | "MedicalEmergency" | "RoadAccident" | "Security" | "Flood" | "Infrastructure" | "Other";
         IncidentDetailResponse: {
@@ -1800,6 +1882,7 @@ export interface components {
             aiRecommendedSeverity: null | components["schemas"]["Severity"];
             location: components["schemas"]["LocationResponse"];
             locationNeedsVerification: boolean;
+            geocodingStatus: components["schemas"]["GeocodingStatus"];
             assignedCoordinator: null | components["schemas"]["UserRef"];
             verifiedBy: null | components["schemas"]["UserRef"];
             /** Format: date-time */
@@ -1908,6 +1991,7 @@ export interface components {
             verifiedBy: null | components["schemas"]["UserRef"];
             /** Format: date-time */
             verifiedAt: null | string;
+            geocoderPlaceName: null | string;
         };
         LoginRequest: {
             email: string;
@@ -2078,6 +2162,16 @@ export interface components {
         /** @description An omitted severity is a validation error, never a silent default. */
         VerifyIncidentRequest: {
             approvedSeverity: null | components["schemas"]["Severity"];
+            /** Format: int32 */
+            version: number;
+        };
+        /** @description A coordinator confirms or corrects the location; the result is the only verified kind (Requirement 8.5). */
+        VerifyLocationRequest: {
+            text: string;
+            /** Format: double */
+            latitude: null | number;
+            /** Format: double */
+            longitude: null | number;
             /** Format: int32 */
             version: number;
         };

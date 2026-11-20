@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { CheckCircle2, Eye, Gauge, Lock, Pencil, RotateCcw, ShieldCheck, XCircle } from 'lucide-react'
+import { CheckCircle2, Eye, Gauge, Lock, MapPinCheck, Pencil, RotateCcw, ShieldCheck, XCircle } from 'lucide-react'
 import type { IncidentAction, IncidentCategory, IncidentDetail, Severity } from '@/api/types'
 import { ApiError } from '@/api/errors'
 import { SeverityBadge } from '@/components/data/SeverityBadge'
@@ -27,10 +27,11 @@ const BUTTONS: Record<IncidentAction, { label: string; icon: typeof Eye; variant
   Reopen: { label: 'Reopen', icon: RotateCcw, variant: 'outline' },
   ChangeSeverity: { label: 'Change severity', icon: Gauge, variant: 'outline' },
   Edit: { label: 'Edit details', icon: Pencil, variant: 'outline' },
+  VerifyLocation: { label: 'Verify location', icon: MapPinCheck, variant: 'outline' },
   Reject: { label: 'Reject', icon: XCircle, variant: 'destructive' },
 }
 
-const ORDER: IncidentAction[] = ['BeginReview', 'Verify', 'Resolve', 'Close', 'Reopen', 'ChangeSeverity', 'Edit', 'Reject']
+const ORDER: IncidentAction[] = ['BeginReview', 'Verify', 'Resolve', 'Close', 'Reopen', 'ChangeSeverity', 'VerifyLocation', 'Edit', 'Reject']
 
 /** Shows only the actions the API says this user may take now (requirements.md 18.4). */
 export function IncidentActions({ incident }: { incident: IncidentDetail }) {
@@ -77,6 +78,7 @@ export function IncidentActions({ incident }: { incident: IncidentDetail }) {
       {open === 'Verify' && <VerifyDialog incident={incident} onClose={close} run={run} />}
       {open === 'ChangeSeverity' && <SeverityDialog incident={incident} onClose={close} run={run} />}
       {open === 'Edit' && <EditDialog incident={incident} onClose={close} run={run} />}
+      {open === 'VerifyLocation' && <VerifyLocationDialog incident={incident} onClose={close} run={run} />}
       {open === 'Reject' && (
         <TextDialog
           title={`Reject ${incident.number}?`}
@@ -261,6 +263,63 @@ function TextDialog({ title, description, label, max, submitLabel, destructive, 
       <div className="grid gap-2">
         <Label htmlFor="action-text">{label}</Label>
         <Textarea id="action-text" rows={4} value={text} onChange={(e) => setText(e.target.value)} />
+      </div>
+    </ActionDialog>
+  )
+}
+
+function parseCoordinate(value: string, min: number, max: number): number | null {
+  if (value.trim() === '') return null
+  const n = Number(value)
+  return Number.isFinite(n) && n >= min && n <= max ? n : null
+}
+
+function VerifyLocationDialog({ incident, onClose, run }: { incident: IncidentDetail; onClose: () => void; run: Run }) {
+  const location = incident.location
+  const [text, setText] = useState(location.text)
+  const [latitude, setLatitude] = useState(location.latitude?.toString() ?? '')
+  const [longitude, setLongitude] = useState(location.longitude?.toString() ?? '')
+  return (
+    <ActionDialog
+      title="Verify location"
+      description="Confirm or correct where this incident is. Your confirmation is recorded and the location is then shown as verified."
+      submitLabel="Verify location"
+      onClose={onClose}
+      validate={() => {
+        if (!text.trim()) return 'A location description is required.'
+        if (parseCoordinate(latitude, -90, 90) === null) return 'Latitude must be a number between -90 and 90.'
+        if (parseCoordinate(longitude, -180, 180) === null) return 'Longitude must be a number between -180 and 180.'
+        return null
+      }}
+      onSubmit={() =>
+        run(
+          {
+            action: 'VerifyLocation',
+            body: { text: text.trim(), latitude: parseCoordinate(latitude, -90, 90)!, longitude: parseCoordinate(longitude, -180, 180)! },
+          },
+          'Location verified',
+        )
+      }
+    >
+      {location.latitude !== null && !location.isVerified && (
+        <p className="text-xs text-muted-foreground">
+          Prefilled from the {location.provenance === 'Reported' ? "reporter's" : 'approximate'} coordinates
+          {location.geocoderPlaceName ? ` (${location.geocoderPlaceName})` : ''}. Check them before confirming.
+        </p>
+      )}
+      <div className="grid gap-2">
+        <Label htmlFor="verify-location-text">Location description</Label>
+        <Input id="verify-location-text" value={text} maxLength={500} onChange={(e) => setText(e.target.value)} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <div className="grid gap-2">
+          <Label htmlFor="verify-latitude">Latitude</Label>
+          <Input id="verify-latitude" inputMode="decimal" value={latitude} onChange={(e) => setLatitude(e.target.value)} />
+        </div>
+        <div className="grid gap-2">
+          <Label htmlFor="verify-longitude">Longitude</Label>
+          <Input id="verify-longitude" inputMode="decimal" value={longitude} onChange={(e) => setLongitude(e.target.value)} />
+        </div>
       </div>
     </ActionDialog>
   )

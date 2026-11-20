@@ -135,7 +135,19 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
                   )}
                 </dl>
               )}
-              {incident.locationNeedsVerification && <p className="text-xs text-warning">This location needs verification.</p>}
+              {incident.location.geocoderPlaceName && !incident.location.isVerified && (
+                <p className="text-xs text-muted-foreground">Matched by the geocoder as “{incident.location.geocoderPlaceName}”.</p>
+              )}
+              {(incident.geocodingStatus === 'Pending' || incident.geocodingStatus === 'Processing') && (
+                <p className="text-xs text-muted-foreground">Looking up approximate coordinates…</p>
+              )}
+              {incident.locationNeedsVerification && (
+                <p className="text-xs text-warning">
+                  {incident.geocodingStatus === 'NoResult' || incident.geocodingStatus === 'Failed'
+                    ? 'This location could not be found automatically and needs verification.'
+                    : 'This location needs verification.'}
+                </p>
+              )}
             </CardContent>
           </Card>
 

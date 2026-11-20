@@ -36,7 +36,7 @@ test('a public report reaches the coordinator, who reviews and verifies it', asy
   await coordinator.getByRole('button', { name: 'Start review' }).click()
   await expect(summary.getByText('Under review', { exact: true })).toBeVisible()
 
-  await coordinator.getByRole('button', { name: 'Verify' }).click()
+  await coordinator.getByRole('button', { name: 'Verify', exact: true }).click()
   const dialog = coordinator.getByRole('dialog')
   await dialog.getByRole('button', { name: 'Verify incident' }).click()
   await expect(dialog.getByText('Choose an approved severity.')).toBeVisible()

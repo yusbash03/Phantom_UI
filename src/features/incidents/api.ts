@@ -80,6 +80,7 @@ export type IncidentCommand =
   | { action: 'Reopen'; body: { reason: string } }
   | { action: 'Close' }
   | { action: 'ChangeSeverity'; body: { severity: Severity } }
+  | { action: 'VerifyLocation'; body: { text: string; latitude: number; longitude: number } }
 
 async function send(incident: IncidentDetail, command: IncidentCommand): Promise<IncidentDetail> {
   const path = { params: { path: { id: incident.id } } }
@@ -101,6 +102,8 @@ async function send(incident: IncidentDetail, command: IncidentCommand): Promise
       return unwrap(await api.POST('/api/v1/incidents/{id}/close', { ...path, body: { version } }))
     case 'ChangeSeverity':
       return unwrap(await api.PUT('/api/v1/incidents/{id}/severity', { ...path, body: { ...command.body, version } }))
+    case 'VerifyLocation':
+      return unwrap(await api.PUT('/api/v1/incidents/{id}/location', { ...path, body: { ...command.body, version } }))
   }
 }
 
