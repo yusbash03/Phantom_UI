@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { downloadAttachment, useIncident } from './api'
 import { IncidentActions } from './components/IncidentActions'
 import { IntelligencePanel } from './components/IntelligencePanel'
+import { RelationsPanel } from './components/RelationsPanel'
 import { CATEGORY_LABELS } from './labels'
 
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -87,6 +88,8 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
           </Card>
 
           <IntelligencePanel incident={incident} />
+
+          <RelationsPanel incident={incident} />
 
           <section aria-labelledby="reports-heading" className="space-y-3">
             <h2 id="reports-heading" className="text-base font-semibold">

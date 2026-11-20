@@ -32,6 +32,7 @@ export const incidentKeys = {
   list: (filters: IncidentFilters) => [...incidentKeys.lists(), filters] as const,
   detail: (id: string) => [...incidentKeys.all, 'detail', id] as const,
   analyses: (id: string) => [...incidentKeys.all, 'analyses', id] as const,
+  relations: (id: string) => [...incidentKeys.all, 'relations', id] as const,
 }
 
 export function useIncidents(filters: IncidentFilters) {
@@ -173,5 +174,55 @@ export function useRetryAnalysis(incidentId: string) {
     mutationFn: async () =>
       unwrap(await api.POST('/api/v1/incidents/{incidentId}/analyses/retry', { params: { path: { incidentId } } })),
     onSettled: () => queryClient.invalidateQueries({ queryKey: incidentKeys.analyses(incidentId) }),
+  })
+}
+
+export function useRelations(incidentId: string) {
+  return useQuery({
+    queryKey: incidentKeys.relations(incidentId),
+    queryFn: async ({ signal }) =>
+      unwrap(await api.GET('/api/v1/incidents/{incidentId}/relations', { signal, params: { path: { incidentId } } })),
+  })
+}
+
+/** A decision can close one incident and move its reports, so both incidents and the lists are refreshed. */
+function useRefreshAfterRelationChange(incidentId: string) {
+  const queryClient = useQueryClient()
+  return (otherIncidentId?: string) => {
+    void queryClient.invalidateQueries({ queryKey: incidentKeys.relations(incidentId) })
+    void queryClient.invalidateQueries({ queryKey: incidentKeys.detail(incidentId) })
+    void queryClient.invalidateQueries({ queryKey: incidentKeys.lists() })
+    if (otherIncidentId) {
+      void queryClient.invalidateQueries({ queryKey: incidentKeys.relations(otherIncidentId) })
+      void queryClient.invalidateQueries({ queryKey: incidentKeys.detail(otherIncidentId) })
+    }
+  }
+}
+
+export function useDecideRelation(incidentId: string) {
+  const refresh = useRefreshAfterRelationChange(incidentId)
+  return useMutation({
+    mutationFn: async (vars: { relationId: string; otherIncidentId: string; decision: Schemas['RelationDecision']; primaryIncidentId?: string }) =>
+      unwrap(
+        await api.PUT('/api/v1/relations/{id}', {
+          params: { path: { id: vars.relationId } },
+          body: { decision: vars.decision, primaryIncidentId: vars.primaryIncidentId ?? null },
+        }),
+      ),
+    onSettled: (_data, _error, vars) => refresh(vars.otherIncidentId),
+  })
+}
+
+export function useLinkIncident(incidentId: string) {
+  const refresh = useRefreshAfterRelationChange(incidentId)
+  return useMutation({
+    mutationFn: async (otherIncidentNumber: string) =>
+      unwrap(
+        await api.POST('/api/v1/incidents/{incidentId}/relations', {
+          params: { path: { incidentId } },
+          body: { otherIncidentNumber },
+        }),
+      ),
+    onSuccess: (relation) => refresh(relation.other.id),
   })
 }

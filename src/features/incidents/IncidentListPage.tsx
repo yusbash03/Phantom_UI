@@ -255,6 +255,11 @@ export function IncidentListPage() {
                     <div className="truncate font-medium">{incident.title}</div>
                     <div className="flex gap-1">
                       {incident.reportCount > 1 && <span className="text-xs text-muted-foreground">{incident.reportCount} reports</span>}
+                      {incident.possibleDuplicateCount > 0 && (
+                        <Badge variant="outline" className="border-warning/40 text-warning">
+                          Possible duplicate
+                        </Badge>
+                      )}
                       {incident.isDemoData && (
                         <Badge variant="outline" className="border-info/40 text-info">
                           Demo data

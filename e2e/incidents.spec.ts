@@ -99,3 +99,50 @@ test('the AI panel shows an honest, clearly labelled state for a new report', as
   await expect(coordinator.getByRole('main').locator('header').getByText('Reported', { exact: true })).toBeVisible()
   await coordinator.close()
 })
+
+test('two reports of the same event are suggested as duplicates and merged by the coordinator', async ({ page, browser }) => {
+  const tag = `kx${Date.now().toString(36)}`
+  const lat = (9 + Math.random()).toFixed(5)
+  const lon = (7 + Math.random()).toFixed(5)
+
+  async function report(latitude: string): Promise<string> {
+    await page.goto('/report')
+    await page.getByLabel(/title/i).fill(`Fire at ${tag} depot`)
+    await page.getByLabel(/description/i).fill(`Flames and black smoke at the ${tag} depot gate, crowd gathering`)
+    await page.getByLabel(/^location/i).fill(`${tag} depot gate`)
+    await page.getByRole('combobox', { name: /category/i }).selectOption('Fire')
+    await page.getByText('Add precise coordinates (optional)').click()
+    await page.getByLabel('Latitude').fill(latitude)
+    await page.getByLabel('Longitude').fill(lon)
+    await page.getByRole('button', { name: /submit report/i }).click()
+    return ((await page.locator('p.font-mono').first().textContent()) ?? '').trim()
+  }
+
+  const first = await report(lat)
+  const second = await report((Number(lat) + 0.0008).toFixed(5))
+
+  const coordinator = await browser.newPage()
+  await signIn(coordinator, 'coordinator@phantom.demo')
+  await coordinator.getByLabel('Search incidents').fill(second)
+  const row = coordinator.getByRole('row').filter({ has: coordinator.getByRole('link', { name: second }) })
+  await expect(row.getByText('Possible duplicate', { exact: true })).toBeVisible()
+  await row.getByRole('link', { name: second }).click()
+
+  const panel = coordinator.locator('[aria-labelledby="relations-title"]')
+  await expect(panel.getByText(/possible duplicate · \d+% match/i)).toBeVisible()
+  await expect(panel.getByRole('link', { name: first })).toBeVisible()
+  await panel.getByRole('button', { name: /confirm duplicate/i }).click()
+  const dialog = coordinator.getByRole('dialog')
+  await expect(dialog.getByRole('radio', { name: new RegExp(first) })).toBeChecked()
+  await dialog.getByRole('button', { name: `Close ${second} as duplicate` }).click()
+
+  const header = coordinator.getByRole('main').locator('header')
+  await expect(header.getByText('Closed', { exact: true })).toBeVisible()
+  await expect(coordinator.getByText(`Duplicate of ${first}`, { exact: true })).toBeVisible()
+  await expect(panel.getByText(new RegExp(`closed as a duplicate of ${first}`, 'i'))).toBeVisible()
+
+  await panel.getByRole('link', { name: first }).first().click()
+  await expect(coordinator.getByRole('heading', { name: 'Public reports (2)' })).toBeVisible()
+  await expect(coordinator.getByText('Linked report')).toBeVisible()
+  await coordinator.close()
+})

@@ -1192,6 +1192,187 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidents/{incidentId}/relations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RelationResponse"][];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /** Links another incident (by number) as Related without closing either. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LinkIncidentRequest"];
+                    "text/json": components["schemas"]["LinkIncidentRequest"];
+                    "application/*+json": components["schemas"]["LinkIncidentRequest"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RelationResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/relations/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Confirm a duplicate (requires the primary), mark related, or mark unrelated (never re-suggested). */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["RelationDecisionRequest"];
+                    "text/json": components["schemas"]["RelationDecisionRequest"];
+                    "application/*+json": components["schemas"]["RelationDecisionRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["RelationDecisionResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Unprocessable Entity */
+                422: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users": {
         parameters: {
             query?: never;
@@ -1544,6 +1725,19 @@ export interface components {
             /** Format: int32 */
             version: number;
         };
+        /** @description Signal breakdown stored with a suggestion and shown to coordinators. */
+        CorrelationSignals: {
+            geo: components["schemas"]["SignalScore"];
+            time: components["schemas"]["SignalScore"];
+            category: components["schemas"]["SignalScore"];
+            text: components["schemas"]["SignalScore"];
+            locations: components["schemas"]["SignalScore"];
+            /** Format: double */
+            distanceMeters: null | number;
+            /** Format: double */
+            minutesApart: number;
+            sharedPlaceTokens: string[];
+        };
         CreateUserRequest: {
             email: string;
             displayName: string;
@@ -1642,6 +1836,8 @@ export interface components {
             locationNeedsVerification: boolean;
             /** Format: int32 */
             reportCount: number;
+            /** Format: int32 */
+            possibleDuplicateCount: number;
             isDemoData: boolean;
             /** Format: date-time */
             createdAt: string;
@@ -1692,6 +1888,9 @@ export interface components {
             recommendedNextActions: string[];
             extractedEntities: components["schemas"]["ExtractedEntity"][];
             confidenceExplanation: string;
+        };
+        LinkIncidentRequest: {
+            otherIncidentNumber: string;
         };
         /** @enum {unknown} */
         LocationPrecision: "Unknown" | "Region" | "Locality" | "Street" | "Exact";
@@ -1761,6 +1960,58 @@ export interface components {
             /** Format: int32 */
             version: number;
         };
+        RelatedIncidentSummary: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            title: string;
+            status: components["schemas"]["IncidentStatus"];
+            category: components["schemas"]["IncidentCategory"];
+            approvedSeverity: null | components["schemas"]["Severity"];
+            locationText: string;
+            /** Format: date-time */
+            createdAt: string;
+        };
+        /** @enum {unknown} */
+        RelationDecision: "ConfirmDuplicate" | "Related" | "Unrelated";
+        /** @description `PrimaryIncidentId` is required to confirm a duplicate: it stays open and receives the reports. */
+        RelationDecisionRequest: {
+            decision: null | components["schemas"]["RelationDecision"];
+            /** Format: uuid */
+            primaryIncidentId: null | string;
+        };
+        RelationDecisionResponse: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["RelationType"];
+            /** Format: uuid */
+            primaryIncidentId: null | string;
+            /** Format: date-time */
+            decidedAt: null | string;
+        };
+        /** @description A relation seen from one incident. `Other` is the incident on the far side of the pair. */
+        RelationResponse: {
+            /** Format: uuid */
+            id: string;
+            type: components["schemas"]["RelationType"];
+            /** Format: double */
+            score: null | number;
+            explanation: null | string;
+            signals: null | components["schemas"]["CorrelationSignals"];
+            other: components["schemas"]["RelatedIncidentSummary"];
+            /** Format: uuid */
+            primaryIncidentId: null | string;
+            createdBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            createdAt: string;
+            decidedBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            decidedAt: null | string;
+            availableDecisions: components["schemas"]["RelationDecision"][];
+            confirmablePrimaryIds: string[];
+        };
+        /** @enum {unknown} */
+        RelationType: "PossibleDuplicate" | "ConfirmedDuplicate" | "Related" | "Unrelated";
         ResolveIncidentRequest: {
             resolutionSummary: string;
             /** Format: int32 */
@@ -1768,6 +2019,11 @@ export interface components {
         };
         /** @enum {unknown} */
         Severity: "Low" | "Medium" | "High" | "Critical";
+        SignalScore: {
+            available: boolean;
+            /** Format: double */
+            value: number;
+        };
         /** @enum {unknown} */
         SortDirection: "Desc" | "Asc";
         /** Format: binary */

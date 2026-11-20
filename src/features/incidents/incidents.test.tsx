@@ -2,6 +2,7 @@ import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { MemoryRouter, Route, Routes } from 'react-router'
+import { TestAuth } from '@/test/auth'
 import { http, HttpResponse } from 'msw'
 import { setupServer } from 'msw/node'
 import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
@@ -9,7 +10,7 @@ import type { IncidentDetail, IncidentListItem } from '@/api/types'
 import { IncidentDetailPage } from './IncidentDetailPage'
 import { IncidentListPage } from './IncidentListPage'
 
-const server = setupServer()
+const server = setupServer(http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])))
 // The detail page also loads AI analyses; these tests cover the rest of the page.
 const noAnalyses = http.get('/api/v1/incidents/:id/analyses', () => HttpResponse.json([]))
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
@@ -22,12 +23,14 @@ function renderAt(path: string) {
   const qc = new QueryClient({ defaultOptions: { queries: { retry: false }, mutations: { retry: false } } })
   return render(
     <QueryClientProvider client={qc}>
+      <TestAuth roles={['IncidentCoordinator']}>
       <MemoryRouter initialEntries={[path]}>
         <Routes>
           <Route path="/incidents" element={<IncidentListPage />} />
           <Route path="/incidents/:id" element={<IncidentDetailPage />} />
         </Routes>
       </MemoryRouter>
+      </TestAuth>
     </QueryClientProvider>,
   )
 }
@@ -46,6 +49,7 @@ function listItem(overrides: Partial<IncidentListItem> = {}): IncidentListItem {
     locationIsVerified: false,
     locationNeedsVerification: false,
     reportCount: 1,
+    possibleDuplicateCount: 0,
     isDemoData: false,
     createdAt: '2026-11-19T10:00:00Z',
     updatedAt: '2026-11-19T10:00:00Z',
