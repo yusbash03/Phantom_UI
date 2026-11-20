@@ -77,6 +77,7 @@ function useListParams() {
     from: params.get('from') ?? '',
     to: params.get('to') ?? '',
     q: params.get('q') ?? '',
+    assigned: params.get('assigned') ?? ALL,
     sortValue: `${sort}:${direction}`,
     sort,
     direction,
@@ -109,13 +110,14 @@ export function IncidentListPage() {
     from: dayBoundary(p.from, false),
     to: dayBoundary(p.to, true),
     search: p.q,
+    hasActiveAssignment: p.assigned === 'yes' ? true : p.assigned === 'no' ? false : undefined,
     sort: p.sort,
     direction: p.direction,
     page: p.page,
     pageSize: PAGE_SIZE,
   }
   const query = useIncidents(filters)
-  const hasFilters = p.statusParam !== OPEN || p.category !== ALL || p.severity !== ALL || p.from !== '' || p.to !== '' || p.q !== ''
+  const hasFilters = p.statusParam !== OPEN || p.category !== ALL || p.severity !== ALL || p.from !== '' || p.to !== '' || p.q !== '' || p.assigned !== ALL
   const invalidRange = p.from !== '' && p.to !== '' && p.from > p.to
 
   return (
@@ -184,6 +186,16 @@ export function IncidentListPage() {
                   {s}
                 </SelectItem>
               ))}
+            </SelectContent>
+          </Select>
+          <Select value={p.assigned} onValueChange={(value) => p.update({ assigned: value === ALL ? undefined : value })}>
+            <SelectTrigger aria-label="Filter by assignment" className="w-full">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value={ALL}>Assigned or not</SelectItem>
+              <SelectItem value="yes">Has an active assignment</SelectItem>
+              <SelectItem value="no">No active assignment</SelectItem>
             </SelectContent>
           </Select>
           <div className="flex items-center gap-2">

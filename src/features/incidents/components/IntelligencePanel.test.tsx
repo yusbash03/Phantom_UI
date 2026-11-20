@@ -9,7 +9,10 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest'
 import type { AnalysisResponse, IncidentDetail, IntelligenceResult } from '@/api/types'
 import { IncidentDetailPage } from '../IncidentDetailPage'
 
-const server = setupServer(http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])))
+const server = setupServer(
+  http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])),
+  http.get('/api/v1/incidents/:id/assignments', () => HttpResponse.json([])),
+)
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())

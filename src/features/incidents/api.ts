@@ -20,6 +20,7 @@ export interface IncidentFilters {
   from?: string
   to?: string
   search?: string
+  hasActiveAssignment?: boolean
   sort: IncidentSortField
   direction: SortDirection
   page: number
@@ -57,6 +58,7 @@ export function useIncidents(filters: IncidentFilters) {
               From: filters.from,
               To: filters.to,
               Search: filters.search || undefined,
+              HasActiveAssignment: filters.hasActiveAssignment,
               Sort: filters.sort,
               Direction: filters.direction,
               Page: filters.page,

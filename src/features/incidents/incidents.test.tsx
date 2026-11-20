@@ -10,7 +10,10 @@ import type { IncidentDetail, IncidentListItem } from '@/api/types'
 import { IncidentDetailPage } from './IncidentDetailPage'
 import { IncidentListPage } from './IncidentListPage'
 
-const server = setupServer(http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])))
+const server = setupServer(
+  http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])),
+  http.get('/api/v1/incidents/:id/assignments', () => HttpResponse.json([])),
+)
 // The detail page also loads AI analyses; these tests cover the rest of the page.
 const noAnalyses = http.get('/api/v1/incidents/:id/analyses', () => HttpResponse.json([]))
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))

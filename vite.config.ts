@@ -26,5 +26,8 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.test.{ts,tsx}'],
     css: false,
+    // Interaction-heavy tests (many simulated keystrokes and Radix menus) exceed the 5 s default when the
+    // machine is busy; the budget only affects timing, never what is asserted.
+    testTimeout: 15_000,
   },
 })

@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { downloadAttachment, useIncident } from './api'
+import { AssignmentsPanel } from '@/features/assignments/AssignmentsPanel'
 import { IncidentActions } from './components/IncidentActions'
 import { IntelligencePanel } from './components/IntelligencePanel'
 import { RelationsPanel } from './components/RelationsPanel'
@@ -86,6 +87,8 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
               <p className="text-sm whitespace-pre-wrap">{incident.description}</p>
             </CardContent>
           </Card>
+
+          <AssignmentsPanel incident={incident} />
 
           <IntelligencePanel incident={incident} />
 

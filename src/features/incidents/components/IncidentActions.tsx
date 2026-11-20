@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { toast } from 'sonner'
-import { CheckCircle2, Eye, Gauge, Lock, MapPinCheck, Pencil, RotateCcw, ShieldCheck, XCircle } from 'lucide-react'
+import { CheckCircle2, Eye, Gauge, Lock, MapPinCheck, Pencil, RotateCcw, ShieldCheck, UserPlus, XCircle } from 'lucide-react'
 import type { IncidentAction, IncidentCategory, IncidentDetail, Severity } from '@/api/types'
 import { ApiError } from '@/api/errors'
 import { SeverityBadge } from '@/components/data/SeverityBadge'
@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { AssignDialog } from '@/features/assignments/AssignDialog'
 import { useIncidentCommand, type IncidentCommand } from '../api'
 import { CATEGORIES, CATEGORY_LABELS, SEVERITIES, isCategory, isSeverity } from '../labels'
 import { ActionDialog } from './ActionDialog'
@@ -21,6 +22,7 @@ const MAX_REASON = 1000
 
 const BUTTONS: Record<IncidentAction, { label: string; icon: typeof Eye; variant: 'default' | 'outline' | 'destructive' }> = {
   BeginReview: { label: 'Start review', icon: Eye, variant: 'default' },
+  Assign: { label: 'Assign responder', icon: UserPlus, variant: 'default' },
   Verify: { label: 'Verify', icon: ShieldCheck, variant: 'default' },
   Resolve: { label: 'Resolve', icon: CheckCircle2, variant: 'default' },
   Close: { label: 'Close', icon: Lock, variant: 'outline' },
@@ -31,7 +33,7 @@ const BUTTONS: Record<IncidentAction, { label: string; icon: typeof Eye; variant
   Reject: { label: 'Reject', icon: XCircle, variant: 'destructive' },
 }
 
-const ORDER: IncidentAction[] = ['BeginReview', 'Verify', 'Resolve', 'Close', 'Reopen', 'ChangeSeverity', 'VerifyLocation', 'Edit', 'Reject']
+const ORDER: IncidentAction[] = ['BeginReview', 'Verify', 'Assign', 'Resolve', 'Close', 'Reopen', 'ChangeSeverity', 'VerifyLocation', 'Edit', 'Reject']
 
 /** Shows only the actions the API says this user may take now (requirements.md 18.4). */
 export function IncidentActions({ incident }: { incident: IncidentDetail }) {
@@ -78,6 +80,7 @@ export function IncidentActions({ incident }: { incident: IncidentDetail }) {
       {open === 'Verify' && <VerifyDialog incident={incident} onClose={close} run={run} />}
       {open === 'ChangeSeverity' && <SeverityDialog incident={incident} onClose={close} run={run} />}
       {open === 'Edit' && <EditDialog incident={incident} onClose={close} run={run} />}
+      {open === 'Assign' && <AssignDialog incident={incident} onClose={close} />}
       {open === 'VerifyLocation' && <VerifyLocationDialog incident={incident} onClose={close} run={run} />}
       {open === 'Reject' && (
         <TextDialog

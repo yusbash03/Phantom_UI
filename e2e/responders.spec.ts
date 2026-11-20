@@ -44,7 +44,8 @@ test('an administrator adds, finds and deactivates a responder', async ({ page }
 
 test('the demo responder sets their own availability from their account page', async ({ page }) => {
   await signIn(page, 'responder@phantom.demo')
-  await expect(page).toHaveURL(/\/account$/)
+  await expect(page).toHaveURL(/\/assignments$/)
+  await page.goto('/account')
   const card = page.locator('[aria-labelledby="my-availability-title"]')
   await expect(card.getByText('MED-01')).toBeVisible()
 

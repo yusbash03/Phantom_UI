@@ -53,7 +53,7 @@ test('the operations map plots a reported incident with an honest, selectable ma
 
 test('responders do not see the operations map', async ({ page }) => {
   await signIn(page, 'responder@phantom.demo')
-  await expect(page).toHaveURL(/\/account$/)
+  await expect(page).toHaveURL(/\/assignments$/)
   await expect(page.getByRole('link', { name: 'Operations map' })).toHaveCount(0)
   await page.goto('/map')
   await expect(page.getByText('You do not have access to this area')).toBeVisible()

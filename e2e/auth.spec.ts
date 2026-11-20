@@ -37,7 +37,7 @@ test('administrator signs in, manages users, and the session survives a reload',
 
 for (const { email, role, home } of [
   { email: 'coordinator@phantom.demo', role: 'Incident Coordinator', home: /\/incidents$/ },
-  { email: 'responder@phantom.demo', role: 'Responder', home: /\/account$/ },
+  { email: 'responder@phantom.demo', role: 'Responder', home: /\/assignments$/ },
 ]) {
   test(`${role} signs in and cannot reach user administration`, async ({ page }) => {
     await signIn(page, email)

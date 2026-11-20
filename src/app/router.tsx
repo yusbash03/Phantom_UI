@@ -3,6 +3,7 @@ import { HomeRedirect } from '@/app/HomeRedirect'
 import { RequireAuth } from '@/app/auth/RequireAuth'
 import { AppShell } from '@/components/layout/AppShell'
 import { AccountPage } from '@/features/account/AccountPage'
+import { MyAssignmentsPage } from '@/features/assignments/MyAssignmentsPage'
 import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -40,6 +41,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
             <OperationsMapPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'assignments',
+        element: (
+          <RequireAuth roles={['Responder']}>
+            <MyAssignmentsPage />
           </RequireAuth>
         ),
       },
