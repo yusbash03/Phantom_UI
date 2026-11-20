@@ -48,7 +48,7 @@ export function DashboardPage() {
     <>
       <PageHeader
         title="Command dashboard"
-        description={summary.data ? `Counted from live records at ${time.format(new Date(summary.data.generatedAt))}. Refreshes every 30 seconds.` : 'Counted from live records.'}
+        description={summary.data ? `Counted from live records at ${time.format(new Date(summary.data.generatedAt))}.` : 'Counted from live records.'}
       />
       <section aria-label="Key figures" className="mb-6">
         {summary.isError ? (

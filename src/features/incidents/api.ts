@@ -1,3 +1,4 @@
+import { useFallbackInterval } from '@/features/realtime/realtime-context'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, authFetch } from '@/api/client'
 import { ApiError, unwrap } from '@/api/errors'
@@ -240,8 +241,9 @@ export function useLinkIncident(incidentId: string) {
   })
 }
 
-/** Incidents for the operations map; refreshed every 30 s so the picture stays current. */
+/** Incidents for the operations map; kept current by live updates, or polled every 30 s while paused. */
 export function useIncidentMap(filters: MapFilters) {
+  const refetchInterval = useFallbackInterval(30_000)
   return useQuery({
     queryKey: incidentKeys.map(filters),
     queryFn: async ({ signal }) =>
@@ -258,7 +260,7 @@ export function useIncidentMap(filters: MapFilters) {
         }),
       ),
     placeholderData: keepPreviousData,
-    refetchInterval: 30_000,
+    refetchInterval,
   })
 }
 

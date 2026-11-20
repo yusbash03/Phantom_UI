@@ -1,9 +1,11 @@
+import { RealtimeProvider } from '@/features/realtime/RealtimeProvider'
 import { Outlet } from 'react-router'
 import { Sidebar } from './Sidebar'
 import { TopNav } from './TopNav'
 
 export function AppShell() {
   return (
+    <RealtimeProvider>
     <div className="flex min-h-svh">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
@@ -13,6 +15,7 @@ export function AppShell() {
         </main>
       </div>
     </div>
+    </RealtimeProvider>
   )
 }
 

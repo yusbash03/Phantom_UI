@@ -1,3 +1,4 @@
+import { useFallbackInterval } from '@/features/realtime/realtime-context'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from '@/api/client'
 import { unwrap } from '@/api/errors'
@@ -11,12 +12,13 @@ export const assignmentKeys = {
   forIncident: (incidentId: string) => [...assignmentKeys.all, 'incident', incidentId] as const,
 }
 
-/** The signed-in responder's assignments, active first. Refreshed every 30 s so new ones appear. */
+/** The signed-in responder's assignments, active first. Pushed live; polled every 30 s while paused. */
 export function useMyAssignments() {
+  const refetchInterval = useFallbackInterval(30_000)
   return useQuery({
     queryKey: assignmentKeys.mine(),
     queryFn: async ({ signal }) => unwrap(await api.GET('/api/v1/assignments/mine', { signal })),
-    refetchInterval: 30_000,
+    refetchInterval,
   })
 }
 
