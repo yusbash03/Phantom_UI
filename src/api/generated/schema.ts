@@ -384,6 +384,59 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidents/map": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Incidents with coordinates for the operations map, plus a count of those that cannot be plotted. */
+        get: {
+            parameters: {
+                query?: {
+                    Status?: components["schemas"]["IncidentStatus"][];
+                    Category?: components["schemas"]["IncidentCategory"];
+                    Severity?: components["schemas"]["Severity"];
+                    MinLatitude?: number;
+                    MinLongitude?: number;
+                    MaxLatitude?: number;
+                    MaxLongitude?: number;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IncidentMapResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/incidents/{id}": {
         parameters: {
             query?: never;
@@ -1927,6 +1980,16 @@ export interface components {
             /** Format: date-time */
             updatedAt: string;
         };
+        /**
+         * @description `WithoutCoordinates` counts matching incidents that cannot be plotted, so the map never implies
+         *             it shows everything. `Truncated` is true when more than int IncidentMapResponse.MaxItems matched.
+         */
+        IncidentMapResponse: {
+            items: components["schemas"]["MapIncident"][];
+            /** Format: int32 */
+            withoutCoordinates: number;
+            truncated: boolean;
+        };
         /** @description An original public submission. Immutable; contact details are visible to staff only. */
         IncidentReportResponse: {
             /** Format: uuid */
@@ -2002,6 +2065,28 @@ export interface components {
             /** Format: date-time */
             accessTokenExpiresAt: string;
             user: components["schemas"]["CurrentUserResponse"];
+        };
+        /** @description One plotted incident. Unverified locations are labelled as such wherever they appear (8.8). */
+        MapIncident: {
+            /** Format: uuid */
+            id: string;
+            number: string;
+            title: string;
+            category: components["schemas"]["IncidentCategory"];
+            status: components["schemas"]["IncidentStatus"];
+            approvedSeverity: null | components["schemas"]["Severity"];
+            aiRecommendedSeverity: null | components["schemas"]["Severity"];
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            provenance: components["schemas"]["LocationProvenance"];
+            precision: components["schemas"]["LocationPrecision"];
+            isVerified: boolean;
+            locationText: string;
+            geocoderPlaceName: null | string;
+            /** Format: date-time */
+            createdAt: string;
         };
         PagedResultOfIncidentListItem: {
             items: components["schemas"]["IncidentListItem"][];

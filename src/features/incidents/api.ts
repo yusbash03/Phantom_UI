@@ -33,6 +33,13 @@ export const incidentKeys = {
   detail: (id: string) => [...incidentKeys.all, 'detail', id] as const,
   analyses: (id: string) => [...incidentKeys.all, 'analyses', id] as const,
   relations: (id: string) => [...incidentKeys.all, 'relations', id] as const,
+  map: (filters: MapFilters) => [...incidentKeys.all, 'map', filters] as const,
+}
+
+export interface MapFilters {
+  status: IncidentStatus[]
+  category?: IncidentCategory
+  severity?: Severity
 }
 
 export function useIncidents(filters: IncidentFilters) {
@@ -227,5 +234,27 @@ export function useLinkIncident(incidentId: string) {
         }),
       ),
     onSuccess: (relation) => refresh(relation.other.id),
+  })
+}
+
+/** Incidents for the operations map; refreshed every 30 s so the picture stays current. */
+export function useIncidentMap(filters: MapFilters) {
+  return useQuery({
+    queryKey: incidentKeys.map(filters),
+    queryFn: async ({ signal }) =>
+      unwrap(
+        await api.GET('/api/v1/incidents/map', {
+          signal,
+          params: {
+            query: {
+              Status: filters.status.length > 0 ? filters.status : undefined,
+              Category: filters.category,
+              Severity: filters.severity,
+            },
+          },
+        }),
+      ),
+    placeholderData: keepPreviousData,
+    refetchInterval: 30_000,
   })
 }

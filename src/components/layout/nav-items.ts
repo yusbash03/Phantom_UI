@@ -1,4 +1,4 @@
-import { Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
+import { Map, Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
 import type { RoleName } from '@/api/types'
 
 export interface NavItem {
@@ -18,7 +18,10 @@ export interface NavSection {
 export const NAV_SECTIONS: NavSection[] = [
   {
     title: 'Operations',
-    items: [{ to: '/incidents', label: 'Incidents', icon: Siren, roles: ['Administrator', 'IncidentCoordinator'] }],
+    items: [
+      { to: '/incidents', label: 'Incidents', icon: Siren, roles: ['Administrator', 'IncidentCoordinator'] },
+      { to: '/map', label: 'Operations map', icon: Map, roles: ['Administrator', 'IncidentCoordinator'] },
+    ],
   },
   {
     title: 'Administration',

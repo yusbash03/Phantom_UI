@@ -103,3 +103,45 @@
     font-feature-settings: "cv11", "ss01";
   }
 }
+
+/* Operations map markers (features/map). Unverified locations: dashed ring + "Unverified" tag (design §7). */
+.phantom-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: pointer;
+  background: none;
+  border: 0;
+  padding: 0;
+}
+.phantom-marker__dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 9999px;
+  background: var(--marker-color);
+  border: 2px solid var(--background);
+  box-shadow: 0 0 0 2px var(--marker-color);
+}
+.phantom-marker[data-dashed='true'] .phantom-marker__dot {
+  box-shadow: none;
+  outline: 2px dashed var(--marker-color);
+  outline-offset: 2px;
+}
+.phantom-marker__tag {
+  font-size: 10px;
+  line-height: 1;
+  padding: 2px 4px;
+  border-radius: 4px;
+  background: var(--background);
+  color: var(--foreground);
+  border: 1px dashed var(--border);
+}
+.phantom-marker[aria-pressed='true'] .phantom-marker__dot {
+  transform: scale(1.35);
+}
+.phantom-marker:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 4px;
+  border-radius: 6px;
+}
