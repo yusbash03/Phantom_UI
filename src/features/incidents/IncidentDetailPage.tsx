@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import { downloadAttachment, useIncident } from './api'
 import { AssignmentsPanel } from '@/features/assignments/AssignmentsPanel'
 import { IncidentActions } from './components/IncidentActions'
+import { IncidentTimeline } from './components/IncidentTimeline'
 import { IntelligencePanel } from './components/IntelligencePanel'
 import { RelationsPanel } from './components/RelationsPanel'
 import { CATEGORY_LABELS } from './labels'
@@ -106,6 +107,8 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
               incident.reports.map((report) => <ReportCard key={report.id} report={report} />)
             )}
           </section>
+
+          <IncidentTimeline incident={incident} />
         </div>
 
         <aside className="space-y-6">

@@ -35,7 +35,10 @@ function useRefreshAfterAssignmentChange() {
     void queryClient.invalidateQueries({ queryKey: assignmentKeys.all })
     void queryClient.invalidateQueries({ queryKey: responderKeys.all })
     void queryClient.invalidateQueries({ queryKey: incidentKeys.lists() })
-    if (assignment) void queryClient.invalidateQueries({ queryKey: incidentKeys.detail(assignment.incident.id) })
+    if (assignment) {
+      void queryClient.invalidateQueries({ queryKey: incidentKeys.detail(assignment.incident.id) })
+      void queryClient.invalidateQueries({ queryKey: incidentKeys.timeline(assignment.incident.id) })
+    }
   }
 }
 

@@ -12,6 +12,7 @@ import { IncidentDetailPage } from '../IncidentDetailPage'
 const server = setupServer(
   http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])),
   http.get('/api/v1/incidents/:id/assignments', () => HttpResponse.json([])),
+  http.get('/api/v1/incidents/:id/timeline', () => HttpResponse.json([])),
 )
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => server.resetHandlers())

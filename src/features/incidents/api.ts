@@ -34,6 +34,7 @@ export const incidentKeys = {
   detail: (id: string) => [...incidentKeys.all, 'detail', id] as const,
   analyses: (id: string) => [...incidentKeys.all, 'analyses', id] as const,
   relations: (id: string) => [...incidentKeys.all, 'relations', id] as const,
+  timeline: (id: string) => [...incidentKeys.all, 'timeline', id] as const,
   map: (filters: MapFilters) => [...incidentKeys.all, 'map', filters] as const,
 }
 
@@ -258,5 +259,18 @@ export function useIncidentMap(filters: MapFilters) {
       ),
     placeholderData: keepPreviousData,
     refetchInterval: 30_000,
+  })
+}
+
+/**
+ * The incident's history (Requirement 15.4). Keyed on `updatedAt`, which every write to the incident
+ * changes (including AI and geocoding); assignment changes invalidate it separately.
+ */
+export function useIncidentTimeline(incidentId: string, updatedAt: string) {
+  return useQuery({
+    queryKey: [...incidentKeys.timeline(incidentId), updatedAt],
+    queryFn: async ({ signal }) =>
+      unwrap(await api.GET('/api/v1/incidents/{incidentId}/timeline', { signal, params: { path: { incidentId } } })),
+    placeholderData: keepPreviousData,
   })
 }

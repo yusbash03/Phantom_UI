@@ -4,6 +4,7 @@ import { RequireAuth } from '@/app/auth/RequireAuth'
 import { AppShell } from '@/components/layout/AppShell'
 import { AccountPage } from '@/features/account/AccountPage'
 import { MyAssignmentsPage } from '@/features/assignments/MyAssignmentsPage'
+import { AuditLogPage } from '@/features/audit/AuditLogPage'
 import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -67,6 +68,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
             <IncidentDetailPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'admin/audit',
+        element: (
+          <RequireAuth roles={['Administrator']}>
+            <AuditLogPage />
           </RequireAuth>
         ),
       },
