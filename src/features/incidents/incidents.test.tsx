@@ -10,6 +10,8 @@ import { IncidentDetailPage } from './IncidentDetailPage'
 import { IncidentListPage } from './IncidentListPage'
 
 const server = setupServer()
+// The detail page also loads AI analyses; these tests cover the rest of the page.
+const noAnalyses = http.get('/api/v1/incidents/:id/analyses', () => HttpResponse.json([]))
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
@@ -168,7 +170,7 @@ describe('IncidentListPage', () => {
 
 describe('IncidentDetailPage', () => {
   it('shows only the actions the API allows, and reporter contact details', async () => {
-    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail())))
+    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail())), noAnalyses)
     renderAt(`/incidents/${ID}`)
 
     expect(await screen.findByRole('heading', { name: 'Smoke from warehouse roof' })).toBeInTheDocument()
@@ -179,11 +181,10 @@ describe('IncidentDetailPage', () => {
     expect(screen.queryByRole('button', { name: 'Close' })).not.toBeInTheDocument()
     expect(screen.getByText('Ada Reporter')).toBeInTheDocument()
     expect(screen.getByText('Reporter-supplied, unverified')).toBeInTheDocument()
-    expect(screen.getByText('Advisory only. Approved values are set by a coordinator.')).toBeInTheDocument()
   })
 
   it('shows no actions for a read-only viewer', async () => {
-    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail({ availableActions: [] }))))
+    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail({ availableActions: [] }))), noAnalyses)
     renderAt(`/incidents/${ID}`)
 
     await screen.findByRole('heading', { name: 'Smoke from warehouse roof' })
@@ -194,6 +195,7 @@ describe('IncidentDetailPage', () => {
     let body: unknown
     server.use(
       http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail())),
+      noAnalyses,
       http.post(`/api/v1/incidents/${ID}/verify`, async ({ request }) => {
         body = await request.json()
         return HttpResponse.json(detail({ status: 'Verified', approvedSeverity: 'Critical', version: 8, availableActions: ['Edit', 'Resolve', 'ChangeSeverity'] }))
@@ -223,6 +225,7 @@ describe('IncidentDetailPage', () => {
         reads += 1
         return HttpResponse.json(detail({ version: 6 + reads }))
       }),
+      noAnalyses,
       http.post(`/api/v1/incidents/${ID}/reject`, () =>
         HttpResponse.json({ title: 'This incident was changed by someone else. Reload and try again.' }, { status: 409 }),
       ),
@@ -239,7 +242,7 @@ describe('IncidentDetailPage', () => {
   })
 
   it('shows a not-found state for an unknown incident', async () => {
-    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json({ title: 'Incident not found.' }, { status: 404 })))
+    server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json({ title: 'Incident not found.' }, { status: 404 })), noAnalyses)
     renderAt(`/incidents/${ID}`)
 
     expect(await screen.findByText('Incident not found')).toBeInTheDocument()

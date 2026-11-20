@@ -1,7 +1,7 @@
 import { useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { toast } from 'sonner'
-import { ArrowLeft, FileAudio, FileImage, Mail, Phone, SearchX, Sparkles, User } from 'lucide-react'
+import { ArrowLeft, FileAudio, FileImage, Mail, Phone, SearchX, User } from 'lucide-react'
 import { ApiError } from '@/api/errors'
 import type { IncidentAttachment, IncidentDetail, IncidentReport, Schemas } from '@/api/types'
 import { LocationBadge } from '@/components/data/LocationBadge'
@@ -16,6 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import { downloadAttachment, useIncident } from './api'
 import { IncidentActions } from './components/IncidentActions'
+import { IntelligencePanel } from './components/IntelligencePanel'
 import { CATEGORY_LABELS } from './labels'
 
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -54,7 +55,6 @@ export function IncidentDetailPage() {
 }
 
 function IncidentView({ incident }: { incident: IncidentDetail }) {
-  const hasAiRecommendation = incident.aiRecommendedSeverity !== null || incident.aiRecommendedCategory !== null
   return (
     <div className="space-y-6">
       <header className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
@@ -86,24 +86,7 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
             </CardContent>
           </Card>
 
-          {hasAiRecommendation && (
-            <Card className="border-dashed">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Sparkles className="size-4" aria-hidden /> AI recommendation
-                </CardTitle>
-                <p className="text-xs text-muted-foreground">Advisory only. Approved values are set by a coordinator.</p>
-              </CardHeader>
-              <CardContent className="flex flex-wrap gap-2 text-sm">
-                {incident.aiRecommendedSeverity && <SeverityBadge severity={incident.aiRecommendedSeverity} source="ai" />}
-                {incident.aiRecommendedCategory && (
-                  <Badge variant="outline" className="border-dashed">
-                    AI · {CATEGORY_LABELS[incident.aiRecommendedCategory]}
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
-          )}
+          <IntelligencePanel incident={incident} />
 
           <section aria-labelledby="reports-heading" className="space-y-3">
             <h2 id="reports-heading" className="text-base font-semibold">

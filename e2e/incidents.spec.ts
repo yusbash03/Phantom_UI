@@ -67,3 +67,35 @@ test('administrators can read incidents but not decide them', async ({ page }) =
     await expect(page.getByRole('button', { name: action })).toHaveCount(0)
   }
 })
+
+test('the AI panel shows an honest, clearly labelled state for a new report', async ({ page, browser }) => {
+  const title = `E2E AI panel ${Date.now()}`
+  await page.goto('/report')
+  await page.getByLabel(/title/i).fill(title)
+  await page.getByLabel(/description/i).fill('Water rising fast across the road, two cars stuck, people on the roof of one car.')
+  await page.getByLabel(/^location/i).fill('Lekki-Epe Expressway near the toll gate')
+  await page.getByRole('combobox', { name: /category/i }).selectOption('Flood')
+  await page.getByRole('button', { name: /submit report/i }).click()
+  const reference = (await page.locator('p.font-mono').first().textContent())?.trim() ?? ''
+
+  const coordinator = await browser.newPage()
+  await signIn(coordinator, 'coordinator@phantom.demo')
+  await coordinator.getByLabel('Search incidents').fill(reference)
+  await coordinator.getByRole('link', { name: reference }).click()
+
+  const panel = coordinator.locator('[aria-labelledby="ai-panel-title"]')
+  await expect(panel.getByText('Advisory only')).toBeVisible()
+  // The queue may hold older reports, so any honest state is valid: queued/analysing, a result, or a retryable failure.
+  const result = panel.getByRole('table', { name: /compared with approved values/i })
+  const retry = panel.getByRole('button', { name: /retry analysis/i })
+  const running = panel.getByText(/analysis queued|analysing the report/i)
+  await expect(result.or(retry).or(running).first()).toBeVisible()
+  if (await result.isVisible()) {
+    // A recommendation never becomes the approved value.
+    await expect(result.getByText('Not yet assessed')).toBeVisible()
+  } else if (await retry.isVisible()) {
+    await expect(panel.getByText('The report and incident are unchanged', { exact: false })).toBeVisible()
+  }
+  await expect(coordinator.getByRole('main').locator('header').getByText('Reported', { exact: true })).toBeVisible()
+  await coordinator.close()
+})

@@ -7,7 +7,11 @@ import { defineConfig, devices } from '@playwright/test'
  */
 export default defineConfig({
   testDir: './e2e',
+  globalSetup: './e2e/global-setup.ts',
   fullyParallel: false,
+  // One browser at a time: the API, Vite and several Chromium instances on one machine starve each other
+  // of CPU (password hashing slowed from ~1 s to 10+ s), which made parallel runs fail. Serial is also faster.
+  workers: 1,
   retries: process.env.CI ? 1 : 0,
   reporter: [['list']],
   // The development database is remote (Neon) and may be waking from auto-suspend.

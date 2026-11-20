@@ -1,7 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, authFetch } from '@/api/client'
 import { ApiError, unwrap } from '@/api/errors'
+import { useEffect, useRef } from 'react'
 import type {
+  AnalysisResponse,
   IncidentCategory,
   IncidentDetail,
   IncidentSortField,
@@ -29,6 +31,7 @@ export const incidentKeys = {
   lists: () => [...incidentKeys.all, 'list'] as const,
   list: (filters: IncidentFilters) => [...incidentKeys.lists(), filters] as const,
   detail: (id: string) => [...incidentKeys.all, 'detail', id] as const,
+  analyses: (id: string) => [...incidentKeys.all, 'analyses', id] as const,
 }
 
 export function useIncidents(filters: IncidentFilters) {
@@ -130,4 +133,45 @@ export async function downloadAttachment(id: string, fileName: string) {
   } finally {
     setTimeout(() => URL.revokeObjectURL(url), 1000)
   }
+}
+
+const ANALYSIS_POLL_MS = 3000
+
+function isRunning(analyses: AnalysisResponse[] | undefined) {
+  const latest = analyses?.[0]
+  return latest?.status === 'Pending' || latest?.status === 'Processing'
+}
+
+/**
+ * AI analysis attempts, newest first. Polls while the latest attempt is queued or running and, when it
+ * finishes, refreshes the incident so its AI-recommended fields match.
+ */
+export function useAnalyses(incidentId: string) {
+  const queryClient = useQueryClient()
+  const query = useQuery({
+    queryKey: incidentKeys.analyses(incidentId),
+    queryFn: async ({ signal }) =>
+      unwrap(await api.GET('/api/v1/incidents/{incidentId}/analyses', { signal, params: { path: { incidentId } } })),
+    refetchInterval: (q) => (isRunning(q.state.data) ? ANALYSIS_POLL_MS : false),
+  })
+
+  const running = isRunning(query.data)
+  const wasRunning = useRef(running)
+  useEffect(() => {
+    if (wasRunning.current && !running) {
+      void queryClient.invalidateQueries({ queryKey: incidentKeys.detail(incidentId) })
+    }
+    wasRunning.current = running
+  }, [running, incidentId, queryClient])
+
+  return query
+}
+
+export function useRetryAnalysis(incidentId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(await api.POST('/api/v1/incidents/{incidentId}/analyses/retry', { params: { path: { incidentId } } })),
+    onSettled: () => queryClient.invalidateQueries({ queryKey: incidentKeys.analyses(incidentId) }),
+  })
 }
