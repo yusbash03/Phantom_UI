@@ -7,6 +7,7 @@ import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
 import { OperationsMapPage } from '@/features/map/OperationsMapPage'
+import { RespondersPage } from '@/features/responders/RespondersPage'
 import { NotFoundPage } from '@/features/NotFoundPage'
 import { PublicReportPage } from '@/features/public-reporting/PublicReportPage'
 import { PublicStatusPage } from '@/features/public-reporting/PublicStatusPage'
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
             <OperationsMapPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'responders',
+        element: (
+          <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
+            <RespondersPage />
           </RequireAuth>
         ),
       },

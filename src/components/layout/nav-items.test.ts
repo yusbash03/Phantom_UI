@@ -23,5 +23,7 @@ describe('incident navigation', () => {
     expect(labels(['Responder'])).not.toContain('Incidents')
     expect(labels(['IncidentCoordinator'])).toContain('Operations map')
     expect(labels(['Responder'])).not.toContain('Operations map')
+    expect(labels(['IncidentCoordinator'])).toContain('Responders')
+    expect(labels(['Responder'])).not.toContain('Responders')
   })
 })

@@ -4,14 +4,17 @@ import { useAuth } from '@/app/auth/auth-context'
 import { PageHeader } from '@/components/layout/AppShell'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { MyAvailabilityCard } from '@/features/responders/MyAvailabilityCard'
 
 export function AccountPage() {
-  const { user } = useAuth()
+  const { user, hasAnyRole } = useAuth()
   if (!user) return null
 
   return (
     <>
       <PageHeader title="Account" description="Your identity and permissions in PHANTOM." />
+      <div className="space-y-6">
+      {hasAnyRole('Responder') && <MyAvailabilityCard />}
       <Card className="max-w-2xl">
         <CardHeader>
           <CardTitle>{user.displayName}</CardTitle>
@@ -36,6 +39,7 @@ export function AccountPage() {
           </dl>
         </CardContent>
       </Card>
+      </div>
     </>
   )
 }
