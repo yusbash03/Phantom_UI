@@ -2,6 +2,8 @@ import { expect, test, type Page } from '@playwright/test'
 
 const password = process.env.PHANTOM_DEMO_PASSWORD
 test.skip(!password, 'Set PHANTOM_DEMO_PASSWORD to the seeded demo password')
+// Several people and screens in one flow against a remote database: give it room on a slow run.
+test.setTimeout(120_000)
 
 async function signIn(page: Page, email: string) {
   await page.goto('/login')

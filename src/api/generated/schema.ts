@@ -3474,6 +3474,7 @@ export interface components {
             failureCode: null | components["schemas"]["AnalysisFailureCode"];
             failureMessage: null | string;
             requestedBy: null | components["schemas"]["UserRef"];
+            usedImageInput: boolean;
         };
         /** @enum {unknown} */
         AnalysisStatus: "Pending" | "Processing" | "Succeeded" | "Failed";

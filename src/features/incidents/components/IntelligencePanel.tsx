@@ -257,6 +257,7 @@ function ResultView({
         {analysis.completedAt && <span>· {dateTime.format(new Date(analysis.completedAt))}</span>}
         {analysis.latencyMs !== null && <span>· {(analysis.latencyMs / 1000).toFixed(1)} s</span>}
         <span>· from report {analysis.reportReference}</span>
+        <span>· {analysis.usedImageInput ? 'text and photos considered' : 'text only'}</span>
       </p>
     </div>
   )

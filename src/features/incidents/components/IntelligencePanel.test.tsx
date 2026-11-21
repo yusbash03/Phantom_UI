@@ -86,6 +86,7 @@ function analysis(overrides: Partial<AnalysisResponse> = {}): AnalysisResponse {
     failureCode: null,
     failureMessage: null,
     requestedBy: null,
+    usedImageInput: false,
     ...overrides,
   }
 }
@@ -144,6 +145,16 @@ describe('IntelligencePanel', () => {
     expect(p.getByText(/gemini-3\.8-flash/)).toBeInTheDocument()
     expect(p.getByText(/from report PH-2026-000077/)).toBeInTheDocument()
     expect(p.queryByText(/simulated/i)).not.toBeInTheDocument()
+    expect(p.getByText('· text only')).toBeInTheDocument()
+  })
+
+  it('says when the report’s photos were part of the analysis', async () => {
+    server.use(
+      http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(incident)),
+      http.get(`/api/v1/incidents/${ID}/analyses`, () => HttpResponse.json([analysis({ usedImageInput: true })])),
+    )
+    renderPage()
+    expect(await (await panel()).findByText('· text and photos considered')).toBeInTheDocument()
   })
 
   it('renders model text as plain text, never as HTML', async () => {
