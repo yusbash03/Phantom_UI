@@ -20,6 +20,7 @@ import { IncidentActions } from './components/IncidentActions'
 import { IncidentTimeline } from './components/IncidentTimeline'
 import { IntelligencePanel } from './components/IntelligencePanel'
 import { RelationsPanel } from './components/RelationsPanel'
+import { WeatherPanel } from './components/WeatherPanel'
 import { CATEGORY_LABELS } from './labels'
 
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -156,6 +157,8 @@ function IncidentView({ incident }: { incident: IncidentDetail }) {
               )}
             </CardContent>
           </Card>
+
+          <WeatherPanel incident={incident} />
 
           <Card>
             <CardHeader>

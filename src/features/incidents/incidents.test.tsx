@@ -14,6 +14,9 @@ const server = setupServer(
   http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])),
   http.get('/api/v1/incidents/:id/assignments', () => HttpResponse.json([])),
   http.get('/api/v1/incidents/:id/timeline', () => HttpResponse.json([])),
+  http.get('/api/v1/incidents/:id/environment', () =>
+    HttpResponse.json({ status: 'NoCoordinates', category: 'Fire', locationIsVerified: false, isForCurrentLocation: false, snapshot: null, failure: null, alertsSupported: false }),
+  ),
 )
 // The detail page also loads AI analyses; these tests cover the rest of the page.
 const noAnalyses = http.get('/api/v1/incidents/:id/analyses', () => HttpResponse.json([]))

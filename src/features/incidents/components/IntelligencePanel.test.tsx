@@ -13,6 +13,9 @@ const server = setupServer(
   http.get('/api/v1/incidents/:id/relations', () => HttpResponse.json([])),
   http.get('/api/v1/incidents/:id/assignments', () => HttpResponse.json([])),
   http.get('/api/v1/incidents/:id/timeline', () => HttpResponse.json([])),
+  http.get('/api/v1/incidents/:id/environment', () =>
+    HttpResponse.json({ status: 'NoCoordinates', category: 'Fire', locationIsVerified: false, isForCurrentLocation: false, snapshot: null, failure: null, alertsSupported: false }),
+  ),
 )
 beforeAll(() => server.listen({ onUnhandledFrame: 'error' }))
 afterEach(() => server.resetHandlers())

@@ -1202,6 +1202,100 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/incidents/{incidentId}/environment": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The latest reading with its source and retrieval time, or why there is none. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EnvironmentResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/incidents/{incidentId}/environment/refresh": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retrieve again now. Readings are cached per area for a short period, so this may return the cached one. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    incidentId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EnvironmentResponse"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/incidents": {
         parameters: {
             query?: never;
@@ -3571,6 +3665,38 @@ export interface components {
         };
         /** @enum {unknown} */
         EntityType: "Person" | "Vehicle" | "Organisation" | "Landmark" | "Hazard" | "Other";
+        EnvironmentFailureResponse: {
+            reason: components["schemas"]["WeatherFailureReason"];
+            message: string;
+            /** Format: date-time */
+            at: string;
+        };
+        /**
+         * @description Weather context for an incident. `Snapshot` is the latest successful reading (which may be for earlier
+         *     coordinates when `IsForCurrentLocation` is false). Weather alerts are not offered by the provider.
+         */
+        EnvironmentResponse: {
+            status: components["schemas"]["EnvironmentStatus"];
+            category: components["schemas"]["IncidentCategory"];
+            locationIsVerified: boolean;
+            isForCurrentLocation: boolean;
+            snapshot: null | components["schemas"]["EnvironmentSnapshotResponse"];
+            failure: null | components["schemas"]["EnvironmentFailureResponse"];
+            alertsSupported: boolean;
+        };
+        EnvironmentSnapshotResponse: {
+            provider: string;
+            /** Format: date-time */
+            retrievedAt: string;
+            /** Format: double */
+            latitude: number;
+            /** Format: double */
+            longitude: number;
+            isFixture: boolean;
+            reading: components["schemas"]["WeatherReading"];
+        };
+        /** @enum {unknown} */
+        EnvironmentStatus: "NoCoordinates" | "Pending" | "Available" | "Unavailable";
         ExtractedEntity: {
             type: components["schemas"]["EntityType"];
             value: string;
@@ -4074,6 +4200,30 @@ export interface components {
         VersionedRequest: {
             /** Format: int32 */
             version: number;
+        };
+        /**
+         * @description Why a weather retrieval failed (Requirement 9.5). Values are persisted; never rename.
+         * @enum {unknown}
+         */
+        WeatherFailureReason: "Timeout" | "Unreachable" | "ProviderError" | "InvalidResponse" | "NotConfigured";
+        /** @description Current conditions (Requirement 9.1). Null where the provider did not report a value. */
+        WeatherReading: {
+            /** Format: date-time */
+            observedAt: string;
+            /** Format: double */
+            temperatureC: null | number;
+            /** Format: double */
+            precipitationMm: null | number;
+            /** Format: double */
+            rainMm: null | number;
+            /** Format: double */
+            windSpeedKmh: null | number;
+            /** Format: int32 */
+            windDirectionDegrees: null | number;
+            /** Format: double */
+            windGustsKmh: null | number;
+            /** Format: double */
+            visibilityMetres: null | number;
         };
     };
     responses: never;

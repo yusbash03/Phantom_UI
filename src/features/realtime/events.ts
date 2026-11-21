@@ -17,6 +17,7 @@ export type RealtimeEventType =
   | 'AssignmentUpdated'
   | 'ResponderAvailabilityChanged'
   | 'NotificationCreated'
+  | 'EnvironmentUpdated'
 
 /** Identifiers only (Requirement 13.4); data is always refetched through the API. */
 export interface RealtimeEvent {
@@ -55,6 +56,8 @@ export function keysFor(event: RealtimeEvent): QueryKey[] {
       return [responderKeys.all, dashboardKeys.all]
     case 'NotificationCreated':
       return [notificationKeys.all]
+    case 'EnvironmentUpdated':
+      return incident ? [incidentKeys.environment(incident)] : []
     default:
       return []
   }

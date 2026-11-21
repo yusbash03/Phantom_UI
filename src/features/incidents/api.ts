@@ -36,6 +36,7 @@ export const incidentKeys = {
   analyses: (id: string) => [...incidentKeys.all, 'analyses', id] as const,
   relations: (id: string) => [...incidentKeys.all, 'relations', id] as const,
   timeline: (id: string) => [...incidentKeys.all, 'timeline', id] as const,
+  environment: (id: string) => [...incidentKeys.all, 'environment', id] as const,
   map: (filters: MapFilters) => [...incidentKeys.all, 'map', filters] as const,
 }
 
@@ -274,5 +275,27 @@ export function useIncidentTimeline(incidentId: string, updatedAt: string) {
     queryFn: async ({ signal }) =>
       unwrap(await api.GET('/api/v1/incidents/{incidentId}/timeline', { signal, params: { path: { incidentId } } })),
     placeholderData: keepPreviousData,
+  })
+}
+
+/**
+ * Weather context (Requirement 9). Kept current by live updates; while a lookup is pending it is polled briefly
+ * so the first reading appears without waiting for an event.
+ */
+export function useIncidentEnvironment(incidentId: string) {
+  return useQuery({
+    queryKey: incidentKeys.environment(incidentId),
+    queryFn: async ({ signal }) =>
+      unwrap(await api.GET('/api/v1/incidents/{incidentId}/environment', { signal, params: { path: { incidentId } } })),
+    refetchInterval: (q) => (q.state.data?.status === 'Pending' ? 5_000 : false),
+  })
+}
+
+export function useRefreshEnvironment(incidentId: string) {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () =>
+      unwrap(await api.POST('/api/v1/incidents/{incidentId}/environment/refresh', { params: { path: { incidentId } } })),
+    onSuccess: (data) => queryClient.setQueryData(incidentKeys.environment(incidentId), data),
   })
 }
