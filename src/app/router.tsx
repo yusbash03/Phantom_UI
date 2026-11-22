@@ -6,6 +6,7 @@ import { AccountPage } from '@/features/account/AccountPage'
 import { MyAssignmentsPage } from '@/features/assignments/MyAssignmentsPage'
 import { AuditLogPage } from '@/features/audit/AuditLogPage'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
+import { ReportsPage } from '@/features/reports/ReportsPage'
 import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -32,6 +33,14 @@ export const router = createBrowserRouter([
       { index: true, element: <HomeRedirect /> },
       { path: 'account', element: <AccountPage /> },
       { path: 'notifications', element: <NotificationsPage /> },
+      {
+        path: 'reports',
+        element: (
+          <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
+            <ReportsPage />
+          </RequireAuth>
+        ),
+      },
       {
         path: 'dashboard',
         element: (

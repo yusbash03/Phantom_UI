@@ -28,6 +28,8 @@ describe('incident navigation', () => {
     expect(labels(['IncidentCoordinator'])).toContain('Dashboard')
     expect(labels(['Administrator'])).toContain('Dashboard')
     expect(labels(['Responder'])).not.toContain('Dashboard')
+    expect(labels(['IncidentCoordinator'])).toContain('Reports')
+    expect(labels(['Responder'])).not.toContain('Reports')
     expect(labels(['IncidentCoordinator'])).toContain('Responders')
     expect(labels(['Responder'])).not.toContain('Responders')
     expect(labels(['Responder'])).toContain('My assignments')
