@@ -1,4 +1,4 @@
-import { BarChart3, Bell, ClipboardList, HardHat, LayoutDashboard, Map, ScrollText, Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
+import { BarChart3, Bell, Settings, ClipboardList, HardHat, LayoutDashboard, Map, ScrollText, Siren, UserCircle, Users, type LucideIcon } from 'lucide-react'
 import type { RoleName } from '@/api/types'
 
 export interface NavItem {
@@ -32,6 +32,7 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { to: '/admin/users', label: 'Users & roles', icon: Users, roles: ['Administrator'] },
       { to: '/admin/audit', label: 'Audit log', icon: ScrollText, roles: ['Administrator'] },
+      { to: '/admin/settings', label: 'Settings', icon: Settings, roles: ['Administrator'] },
     ],
   },
   {

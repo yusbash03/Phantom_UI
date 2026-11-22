@@ -3227,6 +3227,85 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/settings": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SettingsResponse"];
+                    };
+                };
+            };
+        };
+        /** Changes take effect within 30 seconds and are audited with the values before and after. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["UpdateSettingsRequest"];
+                    "text/json": components["schemas"]["UpdateSettingsRequest"];
+                    "application/*+json": components["schemas"]["UpdateSettingsRequest"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["SettingsResponse"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+                /** @description Conflict */
+                409: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/users": {
         parameters: {
             query?: never;
@@ -4085,6 +4164,30 @@ export interface components {
          * @enum {unknown}
          */
         NotificationType: "AssignmentCreated" | "AssignmentCancelled" | "AssignmentDeclined" | "AssignmentCompleted" | "CriticalAiRecommendation" | "PossibleDuplicate";
+        /**
+         * @description The values administrators may change (Requirement 17.1). This explicit list is the whole surface of the
+         *     settings API, so nothing else, and no secret, can be read or written through it (17.3).
+         */
+        OperationalSettings: {
+            /** Format: double */
+            geoWeight: number;
+            /** Format: double */
+            timeWeight: number;
+            /** Format: double */
+            categoryWeight: number;
+            /** Format: double */
+            textWeight: number;
+            /** Format: double */
+            locationWeight: number;
+            /** Format: double */
+            geoRadiusMeters: number;
+            /** Format: double */
+            windowHours: number;
+            /** Format: double */
+            suggestThreshold: number;
+            /** Format: int32 */
+            weatherCacheMinutes: number;
+        };
         PagedResultOfAuditEntryResponse: {
             items: components["schemas"]["AuditEntryResponse"][];
             /** Format: int32 */
@@ -4256,6 +4359,15 @@ export interface components {
             /** Format: int32 */
             version: null | number;
         };
+        /** @description Current values, the configured defaults they override, and who last changed them. */
+        SettingsResponse: {
+            values: components["schemas"]["OperationalSettings"];
+            defaults: components["schemas"]["OperationalSettings"];
+            isCustomised: boolean;
+            updatedBy: null | components["schemas"]["UserRef"];
+            /** Format: date-time */
+            updatedAt: null | string;
+        };
         /** @enum {unknown} */
         Severity: "Low" | "Medium" | "High" | "Critical";
         SignalScore: {
@@ -4310,6 +4422,12 @@ export interface components {
             userId: null | string;
             /** Format: int32 */
             version: number;
+        };
+        /** @description `ExpectedUpdatedAt` is the `UpdatedAt` the administrator saw (null if never changed): a stale save is refused. */
+        UpdateSettingsRequest: {
+            values: components["schemas"]["OperationalSettings"];
+            /** Format: date-time */
+            expectedUpdatedAt: null | string;
         };
         UpdateUserRolesRequest: {
             roles: string[];

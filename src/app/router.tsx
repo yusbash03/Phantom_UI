@@ -7,6 +7,7 @@ import { MyAssignmentsPage } from '@/features/assignments/MyAssignmentsPage'
 import { AuditLogPage } from '@/features/audit/AuditLogPage'
 import { DashboardPage } from '@/features/dashboard/DashboardPage'
 import { ReportsPage } from '@/features/reports/ReportsPage'
+import { SettingsPage } from '@/features/settings/SettingsPage'
 import { IncidentDetailPage } from '@/features/incidents/IncidentDetailPage'
 import { IncidentListPage } from '@/features/incidents/IncidentListPage'
 import { LoginPage } from '@/features/auth/LoginPage'
@@ -86,6 +87,14 @@ export const router = createBrowserRouter([
         element: (
           <RequireAuth roles={['Administrator', 'IncidentCoordinator']}>
             <IncidentDetailPage />
+          </RequireAuth>
+        ),
+      },
+      {
+        path: 'admin/settings',
+        element: (
+          <RequireAuth roles={['Administrator']}>
+            <SettingsPage />
           </RequireAuth>
         ),
       },

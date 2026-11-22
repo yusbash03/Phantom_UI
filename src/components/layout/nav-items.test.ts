@@ -11,6 +11,8 @@ describe('visibleSections', () => {
     expect(labels(['Responder'])).not.toContain('Users & roles')
     expect(labels(['Administrator'])).toContain('Audit log')
     expect(labels(['IncidentCoordinator'])).not.toContain('Audit log')
+    expect(labels(['Administrator'])).toContain('Settings')
+    expect(labels(['IncidentCoordinator'])).not.toContain('Settings')
   })
 
   it('drops sections that end up empty', () => {
