@@ -196,6 +196,40 @@ describe('IncidentDetailPage', () => {
     expect(screen.getByText('Reporter-supplied, unverified')).toBeInTheDocument()
   })
 
+  it('shows a voice recording’s automatic transcript, labelled as such, or says it was not transcribed', async () => {
+    const audio = (transcript: string | null) => ({
+      id: transcript ? 'a1' : 'a2',
+      kind: 'Audio' as const,
+      contentType: 'audio/webm',
+      sizeBytes: 20480,
+      originalFileName: 'voice-note.webm',
+      createdAt: '2026-11-19T10:00:00Z',
+      transcript,
+      transcriptProvider: transcript ? 'Gemini (gemini-3.8-flash)' : null,
+      transcribedAt: transcript ? '2026-11-19T10:00:30Z' : null,
+    })
+    const base = detail()
+    server.use(
+      http.get(`/api/v1/incidents/${ID}`, () =>
+        HttpResponse.json(
+          detail({
+            reports: [
+              { ...base.reports[0]!, attachments: [audio('Fire at the market, people trapped upstairs.')] },
+              { ...base.reports[0]!, id: 'r2', reference: 'PH-2026-000043', isOriginal: false, attachments: [audio(null)] },
+            ],
+          }),
+        ),
+      ),
+      noAnalyses,
+    )
+    renderAt(`/incidents/${ID}`)
+
+    expect(await screen.findByText('Fire at the market, people trapped upstairs.')).toBeInTheDocument()
+    expect(screen.getByText(/Automatic transcript · Gemini \(gemini-3\.8-flash\) · may contain errors\. The original recording is kept unchanged\./)).toBeInTheDocument()
+    expect(screen.getByText('Not transcribed. Listen to the original recording.')).toBeInTheDocument()
+    expect(screen.getAllByRole('button', { name: 'Play voice recording' })).toHaveLength(2)
+  })
+
   it('shows no actions for a read-only viewer', async () => {
     server.use(http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(detail({ availableActions: [] }))), noAnalyses)
     renderAt(`/incidents/${ID}`)

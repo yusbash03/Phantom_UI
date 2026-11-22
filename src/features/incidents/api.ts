@@ -136,11 +136,15 @@ export function useIncidentCommand(incident: IncidentDetail) {
   })
 }
 
-/** Attachments require the bearer token, so they are fetched and saved rather than linked. */
-export async function downloadAttachment(id: string, fileName: string) {
+/** Attachments require the bearer token, so they are fetched rather than linked. */
+export async function fetchAttachment(id: string): Promise<Blob> {
   const response = await authFetch(new Request(new URL(`/api/v1/attachments/${id}/content`, window.location.origin)))
   if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => null))
-  const url = URL.createObjectURL(await response.blob())
+  return response.blob()
+}
+
+export async function downloadAttachment(id: string, fileName: string) {
+  const url = URL.createObjectURL(await fetchAttachment(id))
   try {
     const link = document.createElement('a')
     link.href = url

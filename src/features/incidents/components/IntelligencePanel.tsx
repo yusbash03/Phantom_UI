@@ -257,7 +257,7 @@ function ResultView({
         {analysis.completedAt && <span>· {dateTime.format(new Date(analysis.completedAt))}</span>}
         {analysis.latencyMs !== null && <span>· {(analysis.latencyMs / 1000).toFixed(1)} s</span>}
         <span>· from report {analysis.reportReference}</span>
-        <span>· {analysis.usedImageInput ? 'text and photos considered' : 'text only'}</span>
+        <span>· {inputsText(analysis.usedImageInput, analysis.usedAudioTranscript)}</span>
       </p>
     </div>
   )
@@ -284,4 +284,11 @@ function ItemList({ title, items, ordered }: { title: string; items: string[]; o
       </List>
     </Section>
   )
+}
+
+function inputsText(photos: boolean, voice: boolean): string {
+  if (photos && voice) return 'text, photos and voice transcript considered'
+  if (photos) return 'text and photos considered'
+  if (voice) return 'text and voice transcript considered'
+  return 'text only'
 }

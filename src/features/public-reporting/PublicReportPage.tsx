@@ -20,7 +20,7 @@ export function PublicReportPage() {
   const mutation = useSubmitReport()
 
   const handleSubmit = useCallback(
-    (values: ReportFormValues) => {
+    (values: ReportFormValues, recording: File | null = null) => {
       setServerError(null)
       setServerFieldErrors({})
 
@@ -36,6 +36,9 @@ export function PublicReportPage() {
       if (values.reporterEmail) formData.append('reporterEmail', values.reporterEmail)
       if (values.files) {
         Array.from(values.files).forEach((file) => formData.append('files', file))
+      }
+      if (recording) {
+        formData.append('files', recording)
       }
 
       mutation.mutate(

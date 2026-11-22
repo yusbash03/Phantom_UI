@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { AlertCircle, ChevronDown, Paperclip, Upload, X } from 'lucide-react'
@@ -9,9 +9,11 @@ import { Textarea } from '@/components/ui/textarea'
 import { Spinner } from '@/components/feedback/LoadingState'
 import { type ReportFormValues, reportSchema } from './schema'
 import { INCIDENT_CATEGORIES } from './api'
+import { VoiceRecorder } from './VoiceRecorder'
 
 interface ReportFormProps {
-  onSubmit: (values: ReportFormValues) => void
+  /** `recording` is a voice note made in the browser, sent with the other attachments. */
+  onSubmit: (values: ReportFormValues, recording: File | null) => void
   isSubmitting: boolean
   serverError: string | null
   /** Field-level errors from the API (keys are form field names; casing may differ). */
@@ -39,6 +41,8 @@ function FieldError({ message }: { message: string | undefined }) {
 
 export function ReportForm({ onSubmit, isSubmitting, serverError, serverFieldErrors }: ReportFormProps) {
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [recording, setRecording] = useState<File | null>(null)
+  const [recordingError, setRecordingError] = useState<string | null>(null)
 
   const {
     register,
@@ -73,8 +77,19 @@ export function ReportForm({ onSubmit, isSubmitting, serverError, serverFieldErr
     setValue('files', dt.files.length > 0 ? dt.files : undefined, { shouldValidate: true })
   }
 
+  // The API accepts one audio attachment, so a voice note and an attached audio file are mutually exclusive.
+  const submit = handleSubmit((values) => {
+    const attachedAudio = Array.from(values.files ?? []).some((f) => f.type.startsWith('audio/'))
+    if (recording && attachedAudio) {
+      setRecordingError('Keep either the voice note or the attached audio file, not both.')
+      return
+    }
+    setRecordingError(null)
+    onSubmit(values, recording)
+  })
+
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+    <form onSubmit={(e) => void submit(e)} noValidate className="space-y-5">
       {/* Title */}
       <div className="space-y-1">
         <Label htmlFor="title">
@@ -217,6 +232,16 @@ export function ReportForm({ onSubmit, isSubmitting, serverError, serverFieldErr
           </div>
         </div>
       </details>
+
+      <VoiceRecorder
+        value={recording}
+        onChange={(file) => {
+          setRecording(file)
+          setRecordingError(null)
+        }}
+        disabled={isSubmitting}
+      />
+      <FieldError message={recordingError ?? undefined} />
 
       {/* File attachments */}
       <div className="space-y-2">

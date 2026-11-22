@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router'
 import { toast } from 'sonner'
 import { ArrowLeft, FileAudio, FileImage, Mail, Phone, SearchX, User } from 'lucide-react'
@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
-import { downloadAttachment, useIncident } from './api'
+import { downloadAttachment, fetchAttachment, useIncident } from './api'
 import { AssignmentsPanel } from '@/features/assignments/AssignmentsPanel'
 import { IncidentActions } from './components/IncidentActions'
 import { IncidentTimeline } from './components/IncidentTimeline'
@@ -276,7 +276,24 @@ function ReportCard({ report }: { report: IncidentReport }) {
 
 function AttachmentRow({ attachment }: { attachment: IncidentAttachment }) {
   const [pending, setPending] = useState(false)
+  const [audioUrl, setAudioUrl] = useState<string | null>(null)
   const Icon = attachment.kind === 'Image' ? FileImage : FileAudio
+  const isAudio = attachment.kind === 'Audio'
+
+  useEffect(() => () => {
+    if (audioUrl) URL.revokeObjectURL(audioUrl)
+  }, [audioUrl])
+
+  async function play() {
+    setPending(true)
+    try {
+      setAudioUrl(URL.createObjectURL(await fetchAttachment(attachment.id)))
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'The recording could not be loaded.')
+    } finally {
+      setPending(false)
+    }
+  }
 
   async function download() {
     setPending(true)
@@ -290,13 +307,35 @@ function AttachmentRow({ attachment }: { attachment: IncidentAttachment }) {
   }
 
   return (
-    <li className="flex items-center gap-2 rounded-md bg-muted px-3 py-2 text-xs">
-      <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
-      <span className="min-w-0 flex-1 truncate">{attachment.originalFileName}</span>
-      <span className="shrink-0 text-muted-foreground">{(attachment.sizeBytes / 1024).toFixed(0)} KB</span>
-      <Button size="sm" variant="ghost" onClick={() => void download()} disabled={pending} aria-label={`Download ${attachment.originalFileName}`}>
-        {pending ? <Spinner /> : 'Download'}
-      </Button>
+    <li className="space-y-2 rounded-md bg-muted px-3 py-2 text-xs">
+      <div className="flex items-center gap-2">
+        <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
+        <span className="min-w-0 flex-1 truncate">{isAudio ? 'Voice recording' : attachment.originalFileName}</span>
+        <span className="shrink-0 text-muted-foreground">{(attachment.sizeBytes / 1024).toFixed(0)} KB</span>
+        {isAudio && !audioUrl && (
+          <Button size="sm" variant="ghost" onClick={() => void play()} disabled={pending} aria-label="Play voice recording">
+            Play
+          </Button>
+        )}
+        <Button size="sm" variant="ghost" onClick={() => void download()} disabled={pending} aria-label={`Download ${attachment.originalFileName}`}>
+          {pending ? <Spinner /> : 'Download'}
+        </Button>
+      </div>
+      {audioUrl && (
+        // oxlint-disable-next-line jsx-a11y/media-has-caption -- the transcript below is the text alternative
+        <audio controls autoPlay src={audioUrl} className="w-full" aria-label="Voice recording" />
+      )}
+      {isAudio &&
+        (attachment.transcript ? (
+          <figure className="space-y-1 rounded border border-dashed border-info/40 bg-background p-2">
+            <figcaption className="text-muted-foreground">
+              Automatic transcript · {attachment.transcriptProvider} · may contain errors. The original recording is kept unchanged.
+            </figcaption>
+            <blockquote className="text-sm whitespace-pre-wrap">{attachment.transcript}</blockquote>
+          </figure>
+        ) : (
+          <p className="text-muted-foreground">Not transcribed. Listen to the original recording.</p>
+        ))}
     </li>
   )
 }

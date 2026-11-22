@@ -87,6 +87,7 @@ function analysis(overrides: Partial<AnalysisResponse> = {}): AnalysisResponse {
     failureMessage: null,
     requestedBy: null,
     usedImageInput: false,
+    usedAudioTranscript: false,
     ...overrides,
   }
 }
@@ -155,6 +156,15 @@ describe('IntelligencePanel', () => {
     )
     renderPage()
     expect(await (await panel()).findByText('· text and photos considered')).toBeInTheDocument()
+  })
+
+  it('says when the voice recording transcript was part of the analysis', async () => {
+    server.use(
+      http.get(`/api/v1/incidents/${ID}`, () => HttpResponse.json(incident)),
+      http.get(`/api/v1/incidents/${ID}/analyses`, () => HttpResponse.json([analysis({ usedImageInput: true, usedAudioTranscript: true })])),
+    )
+    renderPage()
+    expect(await (await panel()).findByText('· text, photos and voice transcript considered')).toBeInTheDocument()
   })
 
   it('renders model text as plain text, never as HTML', async () => {

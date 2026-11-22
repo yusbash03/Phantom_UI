@@ -2594,6 +2594,103 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/reports/summary": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    From?: string;
+                    To?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ReportSummary"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/reports/summary.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The same summary as CSV: one row per figure (section, item, value, sample_size). */
+        get: {
+            parameters: {
+                query?: {
+                    From?: string;
+                    To?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": components["schemas"]["FileContentResult"];
+                        "application/problem+json": unknown;
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "text/csv": components["schemas"]["ValidationProblemDetails"];
+                        "application/problem+json": components["schemas"]["ValidationProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/responders": {
         parameters: {
             query?: never;
@@ -3448,6 +3545,22 @@ export interface components {
             isAi: boolean;
             incident: components["schemas"]["IncidentLink"];
         };
+        /**
+         * @description How often the AI's recommended severity matched the coordinator's approved severity, over incidents that have
+         *     both. AiHigher/AiLower say which way it differed.
+         */
+        AiAgreement: {
+            /** Format: int32 */
+            compared: number;
+            /** Format: int32 */
+            agreed: number;
+            /** Format: int32 */
+            aiHigher: number;
+            /** Format: int32 */
+            aiLower: number;
+            /** Format: double */
+            rate: null | number;
+        };
         /** @enum {unknown} */
         AnalysisFailureCode: "Timeout" | "ProviderError" | "InvalidOutput" | "RateLimited" | "NotConfigured";
         /** @description One AI analysis attempt as shown to staff. `Result` is a recommendation, never an approved value. */
@@ -3475,6 +3588,7 @@ export interface components {
             failureMessage: null | string;
             requestedBy: null | components["schemas"]["UserRef"];
             usedImageInput: boolean;
+            usedAudioTranscript: boolean;
         };
         /** @enum {unknown} */
         AnalysisStatus: "Pending" | "Processing" | "Succeeded" | "Failed";
@@ -3554,6 +3668,10 @@ export interface components {
         };
         /** @enum {unknown} */
         AttachmentKind: "Image" | "Audio";
+        /**
+         * @description A stored file. For a voice recording, `Transcript` is the automatic transcript (a derived artefact; the
+         *     original recording is kept unchanged) with its provider and time, or null when not transcribed.
+         */
         AttachmentResponse: {
             /** Format: uuid */
             id: string;
@@ -3564,6 +3682,10 @@ export interface components {
             originalFileName: string;
             /** Format: date-time */
             createdAt: string;
+            transcript: null | string;
+            transcriptProvider: null | string;
+            /** Format: date-time */
+            transcribedAt: null | string;
         };
         /** @enum {unknown} */
         AuditActorType: "User" | "System" | "Anonymous";
@@ -3607,6 +3729,11 @@ export interface components {
             /** Format: double */
             minutesApart: number;
             sharedPlaceTokens: string[];
+        };
+        CountItem: {
+            key: string;
+            /** Format: int32 */
+            count: number;
         };
         CreateResponderRequest: {
             callSign: string;
@@ -3652,6 +3779,13 @@ export interface components {
             availableResponders: number;
             /** Format: date-time */
             generatedAt: string;
+        };
+        /** @description A median duration and how many incidents it was computed from (null when there were none). */
+        DurationStat: {
+            /** Format: double */
+            medianSeconds: null | number;
+            /** Format: int32 */
+            sampleSize: number;
         };
         EditIncidentRequest: {
             title: string;
@@ -3701,6 +3835,16 @@ export interface components {
         ExtractedEntity: {
             type: components["schemas"]["EntityType"];
             value: string;
+        };
+        FileContentResult: {
+            /** Format: byte */
+            fileContents?: string;
+            contentType?: null | string;
+            fileDownloadName?: null | string;
+            /** Format: date-time */
+            lastModified?: null | string;
+            entityTag?: null | components["schemas"]["EntityTagHeaderValue"];
+            enableRangeProcessing?: boolean;
         };
         FileStreamResult: {
             fileStream?: components["schemas"]["Stream"];
@@ -4052,6 +4196,24 @@ export interface components {
         };
         /** @enum {unknown} */
         RelationType: "PossibleDuplicate" | "ConfirmedDuplicate" | "Related" | "Unrelated";
+        /** @description Requirement 16.1. Every value is computed from the database when requested (16.2). */
+        ReportSummary: {
+            /** Format: date-time */
+            from: string;
+            /** Format: date-time */
+            to: string;
+            /** Format: int32 */
+            totalIncidents: number;
+            byCategory: components["schemas"]["CountItem"][];
+            bySeverity: components["schemas"]["CountItem"][];
+            byStatus: components["schemas"]["CountItem"][];
+            reportToVerification: components["schemas"]["DurationStat"];
+            reportToFirstAcknowledgement: components["schemas"]["DurationStat"];
+            reportToResolution: components["schemas"]["DurationStat"];
+            aiSeverityAgreement: components["schemas"]["AiAgreement"];
+            /** Format: date-time */
+            generatedAt: string;
+        };
         ResolveIncidentRequest: {
             resolutionSummary: string;
             /** Format: int32 */
