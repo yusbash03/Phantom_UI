@@ -1,7 +1,7 @@
 import { HubConnectionBuilder, HubConnectionState, LogLevel, type HubConnection } from '@microsoft/signalr'
 import { useQueryClient } from '@tanstack/react-query'
 import { useEffect, useState, type ReactNode } from 'react'
-import { getAccessToken, refreshSession } from '@/api/session'
+import { getAccessToken, notifySessionExpired, refreshSession } from '@/api/session'
 import { reconnectDelay, keysFor, secondsUntilExpiry, type RealtimeEvent } from './events'
 import { RealtimeContext, type LiveStatus } from './realtime-context'
 
@@ -12,7 +12,13 @@ async function freshToken(): Promise<string> {
   const token = getAccessToken()
   const remaining = token ? secondsUntilExpiry(token) : undefined
   if (token && (remaining === undefined || remaining > 30)) return token
-  return (await refreshSession())?.accessToken ?? ''
+  const session = await refreshSession().catch(() => null)
+  if (!session) {
+    // The session is over: sign out here too instead of retrying the hub with no token forever.
+    notifySessionExpired()
+    return ''
+  }
+  return session.accessToken
 }
 
 /**

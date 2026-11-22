@@ -7,6 +7,8 @@ import type { LoginResponse } from './types'
  */
 let accessToken: string | null = null
 let refreshInFlight: Promise<LoginResponse | null> | null = null
+/** Bumped on sign-out so a refresh that was already running cannot bring a token back afterwards. */
+let sessionGeneration = 0
 const expiredListeners = new Set<() => void>()
 
 export function getAccessToken(): string | null {
@@ -32,22 +34,42 @@ export function notifySessionExpired(): void {
  * (single flight) because the server treats reuse of a rotated refresh token as theft.
  */
 export function refreshSession(): Promise<LoginResponse | null> {
-  refreshInFlight ??= (async () => {
+  const generation = sessionGeneration
+  if (refreshInFlight) return refreshInFlight
+  let flight: Promise<LoginResponse | null> | null = null
+  const run = async (): Promise<LoginResponse | null> => {
     try {
       const response = await fetch('/api/v1/auth/refresh', { method: 'POST', credentials: 'same-origin' })
       if (response.status === 401) {
-        accessToken = null
+        if (generation === sessionGeneration) accessToken = null
         return null
       }
       if (!response.ok) throw new ApiError(response.status, await safeJson(response))
       const session = (await response.json()) as LoginResponse
+      // Signed out while this was running: discard the token rather than reviving the session.
+      if (generation !== sessionGeneration) return null
       accessToken = session.accessToken
       return session
     } finally {
-      refreshInFlight = null
+      // Only clear the slot if it still holds this request (sign-out may have replaced it).
+      if (refreshInFlight === flight) refreshInFlight = null
     }
-  })()
-  return refreshInFlight
+  }
+  flight = run()
+  refreshInFlight = flight
+  return flight
+}
+
+/** Ends the session in this tab: forgets the token and disowns any refresh still in flight. */
+export function invalidateSession(): void {
+  sessionGeneration += 1
+  accessToken = null
+  refreshInFlight = null
+}
+
+/** Lets callers drop results that belong to a session that has since ended. */
+export function currentSessionGeneration(): number {
+  return sessionGeneration
 }
 
 async function safeJson(response: Response): Promise<unknown> {

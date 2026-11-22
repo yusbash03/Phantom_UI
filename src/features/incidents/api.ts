@@ -143,12 +143,20 @@ export async function fetchAttachment(id: string): Promise<Blob> {
   return response.blob()
 }
 
-export async function downloadAttachment(id: string, fileName: string) {
-  const url = URL.createObjectURL(await fetchAttachment(id))
+/**
+ * Saves the file under the name the API gives it (e.g. phantom-recording-….webm), never the reporter's own file
+ * name: a public reporter must not choose the extension a coordinator's computer opens it with.
+ */
+export async function downloadAttachment(id: string) {
+  const response = await authFetch(new Request(new URL(`/api/v1/attachments/${id}/content`, window.location.origin)))
+  if (!response.ok) throw new ApiError(response.status, await response.json().catch(() => null))
+  const disposition = response.headers.get('content-disposition') ?? ''
+  const fileName = /filename\*=UTF-8''([^;]+)/i.exec(disposition)?.[1] ?? /filename="?([^";]+)"?/i.exec(disposition)?.[1] ?? `phantom-attachment-${id.slice(0, 8)}`
+  const url = URL.createObjectURL(await response.blob())
   try {
     const link = document.createElement('a')
     link.href = url
-    link.download = fileName
+    link.download = decodeURIComponent(fileName)
     link.click()
   } finally {
     setTimeout(() => URL.revokeObjectURL(url), 1000)

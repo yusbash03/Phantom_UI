@@ -2,7 +2,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { api } from '@/api/client'
 import { unwrap } from '@/api/errors'
-import { onSessionExpired, refreshSession, setAccessToken } from '@/api/session'
+import { invalidateSession, onSessionExpired, refreshSession, setAccessToken } from '@/api/session'
 import type { CurrentUser, RoleName } from '@/api/types'
 import { AuthContext, type AuthContextValue, type AuthStatus } from './auth-context'
 
@@ -12,9 +12,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<CurrentUser | null>(null)
 
   const clear = useCallback(() => {
-    setAccessToken(null)
+    invalidateSession()
     setUser(null)
     setStatus('anonymous')
+    void queryClient.cancelQueries()
     queryClient.clear()
   }, [queryClient])
 

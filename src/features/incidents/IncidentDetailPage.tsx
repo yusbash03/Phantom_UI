@@ -21,6 +21,7 @@ import { IncidentTimeline } from './components/IncidentTimeline'
 import { IntelligencePanel } from './components/IntelligencePanel'
 import { RelationsPanel } from './components/RelationsPanel'
 import { WeatherPanel } from './components/WeatherPanel'
+import { mailtoHref, telHref } from './contact-links'
 import { CATEGORY_LABELS } from './labels'
 
 const dateTime = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' })
@@ -245,17 +246,13 @@ function ReportCard({ report }: { report: IncidentReport }) {
             {report.reporterPhone && (
               <li className="flex items-center gap-1">
                 <Phone className="size-3.5 text-muted-foreground" aria-hidden />
-                <a href={`tel:${report.reporterPhone}`} className="hover:underline">
-                  {report.reporterPhone}
-                </a>
+                <ContactLink href={telHref(report.reporterPhone)} text={report.reporterPhone} />
               </li>
             )}
             {report.reporterEmail && (
               <li className="flex items-center gap-1">
                 <Mail className="size-3.5 text-muted-foreground" aria-hidden />
-                <a href={`mailto:${report.reporterEmail}`} className="hover:underline">
-                  {report.reporterEmail}
-                </a>
+                <ContactLink href={mailtoHref(report.reporterEmail)} text={report.reporterEmail} />
               </li>
             )}
           </ul>
@@ -271,6 +268,17 @@ function ReportCard({ report }: { report: IncidentReport }) {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+/** Anything that is not plainly a phone number or email address is shown as text, not a link. */
+function ContactLink({ href, text }: { href: string | null; text: string }) {
+  return href ? (
+    <a href={href} className="hover:underline">
+      {text}
+    </a>
+  ) : (
+    <span>{text}</span>
   )
 }
 
@@ -298,7 +306,7 @@ function AttachmentRow({ attachment }: { attachment: IncidentAttachment }) {
   async function download() {
     setPending(true)
     try {
-      await downloadAttachment(attachment.id, attachment.originalFileName)
+      await downloadAttachment(attachment.id)
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'The attachment could not be downloaded.')
     } finally {
