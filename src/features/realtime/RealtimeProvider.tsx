@@ -5,7 +5,12 @@ import { getAccessToken, notifySessionExpired, refreshSession } from '@/api/sess
 import { reconnectDelay, keysFor, secondsUntilExpiry, type RealtimeEvent } from './events'
 import { RealtimeContext, type LiveStatus } from './realtime-context'
 
-const HUB_PATH = '/hubs/operations'
+/**
+ * Same-origin '/hubs/operations' in development (Vite proxies WebSockets). In production the hub is reached
+ * directly at the API origin (VITE_HUB_URL): Vercel rewrites cannot carry WebSockets. Only the bearer token is
+ * sent, never cookies, so this needs no credentialed CORS.
+ */
+const HUB_URL = (import.meta.env.VITE_HUB_URL as string | undefined) || '/hubs/operations'
 
 /** A token that is about to expire is refreshed first; the hub closes connections when their token expires. */
 async function freshToken(): Promise<string> {
@@ -35,7 +40,7 @@ export function RealtimeProvider({ children }: { children: ReactNode }) {
     let restartTimer: ReturnType<typeof setTimeout> | undefined
     let attempts = 0
     const connection: HubConnection = new HubConnectionBuilder()
-      .withUrl(HUB_PATH, { accessTokenFactory: freshToken })
+      .withUrl(HUB_URL, { accessTokenFactory: freshToken, withCredentials: false })
       .withAutomaticReconnect({ nextRetryDelayInMilliseconds: ({ previousRetryCount }) => reconnectDelay(previousRetryCount) })
       .configureLogging(LogLevel.None)
       .build()
