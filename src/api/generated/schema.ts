@@ -4128,6 +4128,7 @@ export interface components {
             geocoderPlaceName: null | string;
             /** Format: date-time */
             createdAt: string;
+            isDemoData: boolean;
         };
         MarkAllReadResponse: {
             /** Format: int32 */
@@ -4359,7 +4360,7 @@ export interface components {
             /** Format: int32 */
             version: null | number;
         };
-        /** @description Current values, the configured defaults they override, and who last changed them. */
+        /** @description Current values, the configured defaults, whether they differ, and who last changed them. */
         SettingsResponse: {
             values: components["schemas"]["OperationalSettings"];
             defaults: components["schemas"]["OperationalSettings"];

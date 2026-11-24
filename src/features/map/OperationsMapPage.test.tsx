@@ -42,6 +42,7 @@ const geocoded: MapIncident = {
   locationText: 'Allen Avenue roundabout',
   geocoderPlaceName: 'Allen Avenue, Ikeja, Lagos',
   createdAt: '2026-11-20T08:00:00Z',
+  isDemoData: false,
 }
 
 const verified: MapIncident = {
@@ -105,6 +106,18 @@ describe('OperationsMapPage', () => {
     const second = (await screen.findByRole('heading', { name: 'Flooded underpass' })).closest('[aria-labelledby="selected-incident-title"]') as HTMLElement
     expect(within(second).getByText('Verified by a coordinator')).toBeInTheDocument()
     expect(within(second).queryByText(/Matched as/)).not.toBeInTheDocument()
+  })
+
+  it('labels demonstration incidents as demo data in the list and the details', async () => {
+    const demo = { ...geocoded, id: 'demo', number: 'PH-2026-000900', title: 'Demo: Smoke from a market stall', isDemoData: true }
+    server.use(http.get('/api/v1/incidents/map', () => HttpResponse.json({ items: [demo, verified], withoutCoordinates: 0, truncated: false })))
+    renderPage()
+
+    const list = await screen.findByRole('list', { name: 'Incidents on the map' })
+    expect(within(list).getAllByText('Demo data')).toHaveLength(1)
+    await userEvent.click(within(list).getByRole('button', { name: /PH-2026-000900/ }))
+    const details = screen.getByRole('heading', { name: 'Demo: Smoke from a market stall' }).closest('[aria-labelledby]') as HTMLElement
+    expect(within(details).getByText('Demo data')).toBeInTheDocument()
   })
 
   it('sends filter choices to the API', async () => {

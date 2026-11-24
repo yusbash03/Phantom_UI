@@ -18,6 +18,7 @@ const base: MapIncident = {
   locationText: 'Allen Avenue',
   geocoderPlaceName: 'Allen Avenue, Lagos',
   createdAt: '2026-11-20T08:00:00Z',
+  isDemoData: false,
 }
 
 describe('markerAppearance', () => {

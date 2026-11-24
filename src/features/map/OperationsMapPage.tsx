@@ -177,6 +177,11 @@ export function OperationsMapPage() {
                       >
                         <span className="font-mono text-xs text-muted-foreground">{item.number}</span>
                         <span className="min-w-0 flex-1 truncate">{item.title}</span>
+                        {item.isDemoData && (
+                          <Badge variant="outline" className="border-info/40 text-[10px] text-info">
+                            Demo data
+                          </Badge>
+                        )}
                         {!item.isVerified && (
                           <Badge variant="outline" className="border-dashed text-[10px]">
                             Unverified
@@ -206,6 +211,11 @@ function SelectedIncident({ item, onClose }: { item: MapIncident; onClose: () =>
         </h2>
         <div className="flex flex-wrap gap-2 pt-1">
           <StatusBadge status={item.status} />
+          {item.isDemoData && (
+            <Badge variant="outline" className="border-info/40 text-info">
+              Demo data
+            </Badge>
+          )}
           <SeverityBadge severity={item.approvedSeverity} />
           <Badge variant="secondary">{CATEGORY_LABELS[item.category]}</Badge>
         </div>
