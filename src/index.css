@@ -38,7 +38,8 @@
   --sidebar-border: oklch(1 0 0 / 7%);
   --sidebar-ring: oklch(0.71 0.19 46 / 70%);
 
-  --severity-critical: oklch(0.64 0.22 25);
+  /* Lightened from 0.64 so badge text on its own tint passes WCAG AA contrast (4.5:1) on the dark surfaces. */
+  --severity-critical: oklch(0.7 0.2 25);
   --severity-high: oklch(0.76 0.17 60);
   --severity-medium: oklch(0.84 0.15 88);
   --severity-low: oklch(0.72 0.12 240);

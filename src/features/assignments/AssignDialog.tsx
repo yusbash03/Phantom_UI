@@ -3,6 +3,7 @@ import { toast } from 'sonner'
 import { ApiError } from '@/api/errors'
 import type { IncidentDetail } from '@/api/types'
 import { AvailabilityBadge } from '@/components/data/AvailabilityBadge'
+import { ErrorState } from '@/components/feedback/ErrorState'
 import { Spinner } from '@/components/feedback/LoadingState'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
@@ -47,6 +48,9 @@ export function AssignDialog({ incident, onClose }: { incident: IncidentDetail; 
     >
       {responders.isPending ? (
         <Spinner label="Loading responders…" />
+      ) : responders.isError ? (
+        // Never "no responders" when the list simply failed to load.
+        <ErrorState error={responders.error} onRetry={() => void responders.refetch()} title="Responders could not be loaded" />
       ) : options.length === 0 ? (
         <p className="text-sm text-muted-foreground">There are no active responders. An administrator can add them.</p>
       ) : (

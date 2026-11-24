@@ -109,6 +109,16 @@ describe('AssignDialog', () => {
     await userEvent.click(within(dialog).getByRole('button', { name: 'Assign' }))
     await waitFor(() => expect(body).toEqual({ responderId: 'r1', overrideReason: null }))
   })
+
+  it('says the responder list failed to load, rather than that there are no responders', async () => {
+    server.use(http.get('/api/v1/responders', () => HttpResponse.json({ title: 'Boom' }, { status: 500 })))
+    renderWith(<AssignDialog incident={incident} onClose={() => {}} />, ['IncidentCoordinator'])
+
+    const dialog = await screen.findByRole('dialog')
+    expect(await within(dialog).findByText('Responders could not be loaded')).toBeInTheDocument()
+    expect(within(dialog).getByRole('button', { name: /try again/i })).toBeInTheDocument()
+    expect(within(dialog).queryByText(/there are no active responders/i)).not.toBeInTheDocument()
+  })
 })
 
 describe('AssignmentCard', () => {

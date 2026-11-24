@@ -124,8 +124,9 @@ export function OperationsMapPage() {
         </output>
       )}
 
+      {/* min-w-0 on grid items: long incident titles must truncate, not widen the page on phones. */}
       <div className="grid gap-4 lg:grid-cols-3">
-        <Card className="overflow-hidden py-0 lg:col-span-2">
+        <Card className="min-w-0 overflow-hidden py-0 lg:col-span-2">
           <div className="h-[60vh] min-h-[420px]">
             {query.isError ? (
               <ErrorState error={query.error} onRetry={() => void query.refetch()} title="Map data could not be loaded" />
@@ -144,7 +145,7 @@ export function OperationsMapPage() {
           <Legend />
         </Card>
 
-        <div className="space-y-4">
+        <div className="min-w-0 space-y-4">
           {selected ? (
             <SelectedIncident item={selected} onClose={() => setSelectedId(null)} />
           ) : (

@@ -94,9 +94,9 @@ function MetricTile({ metric, value }: { metric: Metric; value: number | undefin
       <p className="text-[11px] text-muted-foreground">{metric.hint}</p>
     </Card>
   )
-  const name = value === undefined ? metric.label : `${metric.label}: ${value}`
   return metric.to ? (
-    <Link to={metric.to} aria-label={name} className="block h-full rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
+    // Named by its visible content (label, value, hint) so speech input can target what is on screen (WCAG 2.5.3).
+    <Link to={metric.to} className="block h-full rounded-xl focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none">
       {body}
     </Link>
   ) : (
@@ -107,7 +107,8 @@ function MetricTile({ metric, value }: { metric: Metric; value: number | undefin
 function RecentActivity() {
   const query = useDashboardActivity()
   return (
-    <Card className="lg:col-span-3" aria-labelledby="activity-title">
+    // min-w-0: a grid item otherwise grows to its longest (truncated) line and overflows narrow screens.
+    <Card className="min-w-0 lg:col-span-3" aria-labelledby="activity-title">
       <CardHeader>
         <CardTitle id="activity-title">Recent activity</CardTitle>
         <p className="text-xs text-muted-foreground">The latest changes to incidents, from the audit log. AI entries are marked AI.</p>
@@ -162,7 +163,7 @@ function MiniMap() {
   const query = useIncidentMap({ status: OPEN_STATUSES })
   const items = query.data?.items ?? []
   return (
-    <Card className="gap-0 overflow-hidden py-0 lg:col-span-2" aria-labelledby="minimap-title">
+    <Card className="min-w-0 gap-0 overflow-hidden py-0 lg:col-span-2" aria-labelledby="minimap-title">
       <div className="flex items-center justify-between gap-2 px-4 py-3">
         <h2 id="minimap-title" className="font-semibold">
           Where open incidents are

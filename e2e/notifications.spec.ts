@@ -47,7 +47,7 @@ test('assignment and decline notifications reach the right people and lead to th
   // The responder is told, and the notice leads to My assignments.
   const responder = await browser.newPage()
   await signIn(responder, 'responder@phantom.demo')
-  await responder.getByRole('button', { name: /^Notifications, \d+ unread$/ }).click()
+  await responder.getByRole('button', { name: /^Notifications, \d+\+? unread$/ }).click()
   await responder.getByRole('menuitem', { name: new RegExp(`New assignment: ${reference}`) }).click()
   await expect(responder).toHaveURL(/\/assignments$/)
 

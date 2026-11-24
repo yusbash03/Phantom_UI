@@ -25,12 +25,27 @@ function SelectTrigger({
   className,
   size = "default",
   children,
+  id,
+  "aria-label": ariaLabel,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
 }) {
+  // WCAG 2.5.3 (label in name): a plain aria-label would hide the visible selection ("All roles") from the
+  // accessible name. Instead the label and the trigger's own text are combined: "Filter by role All roles".
+  const autoId = React.useId()
+  const triggerId = id ?? `select-trigger-${autoId}`
+  const labelId = `${triggerId}-label`
   return (
+    <>
+    {ariaLabel && (
+      <span id={labelId} hidden>
+        {ariaLabel}
+      </span>
+    )}
     <SelectPrimitive.Trigger
+      id={triggerId}
+      aria-labelledby={ariaLabel ? `${labelId} ${triggerId}` : props["aria-labelledby"]}
       data-slot="select-trigger"
       data-size={size}
       className={cn(
@@ -44,6 +59,7 @@ function SelectTrigger({
         <ChevronDownIcon className="size-4 opacity-50" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
+    </>
   )
 }
 

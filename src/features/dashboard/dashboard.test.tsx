@@ -70,10 +70,10 @@ describe('DashboardPage', () => {
     renderPage()
 
     const figures = await screen.findByRole('region', { name: 'Key figures' })
-    expect(await within(figures).findByRole('link', { name: 'Active incidents: 17' })).toHaveAttribute('href', '/incidents')
-    expect(within(figures).getByRole('link', { name: 'Total incidents: 128' })).toHaveAttribute('href', '/incidents?status=all')
-    expect(within(figures).getByRole('link', { name: 'Verified, unassigned: 4' })).toHaveAttribute('href', '/incidents?status=Verified')
-    expect(within(figures).getByRole('link', { name: 'Available responders: 9' })).toHaveAttribute('href', '/responders')
+    expect(await within(figures).findByRole('link', { name: /^Active incidents\s*17\b/ })).toHaveAttribute('href', '/incidents')
+    expect(within(figures).getByRole('link', { name: /^Total incidents\s*128\b/ })).toHaveAttribute('href', '/incidents?status=all')
+    expect(within(figures).getByRole('link', { name: /^Verified, unassigned\s*4\b/ })).toHaveAttribute('href', '/incidents?status=Verified')
+    expect(within(figures).getByRole('link', { name: /^Available responders\s*9\b/ })).toHaveAttribute('href', '/responders')
     const tiles: [string, string][] = [
       ['High priority', '3'],
       ['Awaiting review', '0'],

@@ -28,7 +28,7 @@ test('administrator signs in, manages users, and the session survives a reload',
   await page.reload()
   await expect(page.getByRole('heading', { name: 'Users & roles' })).toBeVisible()
 
-  await page.getByRole('button', { name: 'Account menu' }).click()
+  await page.getByRole('button', { name: /^Account menu, / }).click()
   await page.getByRole('menuitem', { name: 'Sign out' }).click()
   await expect(page).toHaveURL(/\/login$/)
   await page.goto('/admin/users')

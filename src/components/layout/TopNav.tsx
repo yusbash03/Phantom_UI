@@ -70,7 +70,9 @@ export function TopNav() {
         <NotificationBell />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-10 gap-3 px-2" aria-label="Account menu">
+            {/* The visible name and role stay in the accessible name (WCAG 2.5.3): "Account menu, Ada Admin, Administrator". */}
+            <Button variant="ghost" className="h-10 gap-3 px-2">
+              <span className="sr-only">Account menu, </span>
               <Avatar className="size-8">
                 <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">{initials(user?.displayName ?? '?')}</AvatarFallback>
               </Avatar>

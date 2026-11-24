@@ -69,7 +69,7 @@ test('the dashboard and a responder’s assignments update live, without reloadi
 
   const card = responder.getByRole('article', { name: `Assignment MED-01 to ${reference}` })
   await expect(card).toBeVisible({ timeout: 10_000 })
-  await expect(responder.getByRole('button', { name: /^Notifications, \d+ unread$/ })).toBeVisible()
+  await expect(responder.getByRole('button', { name: /^Notifications, \d+\+? unread$/ })).toBeVisible()
 
   // The responder declines; the coordinator's open incident page reflects it without a reload.
   await card.getByRole('button', { name: 'Decline' }).click()

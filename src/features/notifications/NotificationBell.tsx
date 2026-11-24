@@ -25,7 +25,8 @@ export function NotificationBell() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="relative" aria-label={unread > 0 ? `Notifications, ${unread} unread` : 'Notifications'}>
+        {/* The name carries the badge's visible text, so "99+" when capped (WCAG 2.5.3: label in name). */}
+        <Button variant="ghost" size="icon" className="relative" aria-label={unread > 0 ? `Notifications, ${unread > 99 ? '99+' : unread} unread` : 'Notifications'}>
           <Bell />
           {unread > 0 && (
             <span aria-hidden className="absolute -top-0.5 -right-0.5 grid min-w-4 place-items-center rounded-full bg-primary px-1 text-[10px] font-semibold text-primary-foreground">
