@@ -4,7 +4,7 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://phantom-api.onrender.com/api/:path*" },
+    { "source": "/api/:path*", "destination": "https://phantom-api-xnkr.onrender.com/api/:path*" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -13,7 +13,7 @@
       "headers": [
         {
           "key": "Content-Security-Policy",
-          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.mapbox.com; font-src 'self' data:; connect-src 'self' https://*.mapbox.com https://phantom-api.onrender.com wss://phantom-api.onrender.com; worker-src 'self' blob:; child-src blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
+          "value": "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https://*.mapbox.com; font-src 'self' data:; connect-src 'self' https://*.mapbox.com https://phantom-api-xnkr.onrender.com wss://phantom-api-xnkr.onrender.com; worker-src 'self' blob:; child-src blob:; media-src 'self' blob:; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'"
         },
         { "key": "X-Content-Type-Options", "value": "nosniff" },
         { "key": "X-Frame-Options", "value": "DENY" },

@@ -4,6 +4,8 @@ The browser front end of **PHANTOM**, an AI-assisted incident intelligence and r
 serves the public reporting form (no account needed) and the operations app for Administrators, Incident Coordinators
 and Responders. The API, requirements and design live in the companion repository **Phantom_API**.
 
+Live: <https://phantom-ui-two.vercel.app> · API reference <https://phantom-api-xnkr.onrender.com/scalar>.
+
 > PHANTOM recommends; people decide. AI output is always shown as an advisory recommendation, apart from the values a
 > coordinator approves. It is not certified or approved for real emergency use.
 
@@ -78,9 +80,12 @@ reuses that server.
 
 ## Deployment
 
-Vercel: `vercel.json` defines the `/api` rewrite to the API, the SPA fallback, and the CSP and security headers. If the
-API host is not `phantom-api.onrender.com`, update it in both the rewrite and the CSP. Full steps are in
-Phantom_API `docs/deployment.md`.
+Vercel: `vercel.json` defines the `/api` rewrite to the API (`https://phantom-api-xnkr.onrender.com`), the SPA
+fallback, and the CSP and security headers. In Vercel, set `VITE_MAPBOX_PUBLIC_TOKEN` and
+`VITE_HUB_URL=https://phantom-api-xnkr.onrender.com/hubs/operations`. If the API host changes, update it in the
+rewrite, the CSP and `VITE_HUB_URL`. Full steps are in Phantom_API `docs/deployment.md`.
+
+API reference: <https://phantom-api-xnkr.onrender.com/scalar>.
 
 ## Licence
 
